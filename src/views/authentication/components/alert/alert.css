@@ -1,0 +1,36 @@
+.sContainer {
+    width: 500px;
+    max-height: 500px;
+    padding-bottom: 20px;
+}
+
+.dialogTitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.fName {
+    font-weight: bold;
+}
+
+.simpleSet{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding-left: 10px;
+}
+
+.settingsTitle{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.setForm{
+    text-align: right ;
+    margin-left: auto;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 10px;
+}

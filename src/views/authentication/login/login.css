@@ -1,0 +1,41 @@
+.lContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lFormContainer {
+  max-width: 350px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.title {
+  font-family: "DK Uncle Edward";
+  font-size: 65px;
+}
+
+.input {
+  width: 80%;
+  background-color: #e8e8e8;
+}
+
+.signUpCont {
+  max-width: 350px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.signUpCont {
+  display: flex;
+  flex-direction: row;
+}

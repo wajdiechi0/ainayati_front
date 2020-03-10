@@ -1,0 +1,38 @@
+.SignUpcontainer {
+    background-color: #fff;
+    width: 100%;
+    padding-top:50px;
+    padding-bottom:50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.sFormContainer {
+    max-width: 350px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+
+.title {
+    font-family: "DK Uncle Edward";
+    font-size: 65px;
+}
+
+.input {
+    width: 80%;
+}
+
+.signInCont{
+    max-width: 350px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-top: 10px;
+}
