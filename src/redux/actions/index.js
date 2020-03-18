@@ -36,7 +36,7 @@ export async function login(email, password) {
     .then(response => response.data);
   return {
     type: "login",
-    payload: result.code === "0" ? true : false
+    payload: result
   };
 }
 

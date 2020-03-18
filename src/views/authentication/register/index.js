@@ -36,8 +36,12 @@ class RegisterComponent extends Component {
     return (
       <div className={"SignUpcontainer"}>
         <div className={"sFormContainer"}>
-        <img src={logo} style={{width:100, height:100,marginBottom: 30}}/>
-        <TextField
+          <img
+            src={logo}
+            style={{ width: 100, height: 100, marginBottom: 30 }}
+            alt={"Ainayati"}
+          />
+          <TextField
             label="Email address"
             variant="outlined"
             margin={"dense"}
@@ -169,13 +173,19 @@ class RegisterComponent extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.auth.registerResult) {
-      if (this.props.auth.registerResult.code === "03" && this.props !== prevProps) {
+      if (
+        this.props.auth.registerResult.code === "03" &&
+        this.props !== prevProps
+      ) {
         this.setState({
           openAlert: true,
           success: false,
           alertText: "Email already exist"
         });
-      } else if (this.props.auth.registerResult.code === "02" && this.props !== prevProps) {
+      } else if (
+        this.props.auth.registerResult.code === "02" &&
+        this.props !== prevProps
+      ) {
         this.setState({
           openAlert: true,
           success: false,
@@ -185,8 +195,8 @@ class RegisterComponent extends Component {
     }
   }
 
-  componentDidMount(){
-    document.title = 'Register';
+  componentDidMount() {
+    document.title = "Register";
   }
 }
 

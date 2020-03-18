@@ -24,6 +24,7 @@ class LoginComponent extends React.Component {
           <img
             src={logo}
             style={{ width: 100, height: 100, marginBottom: 30 }}
+            alt={"Ainayati"}
           />
           <TextField
             id="outlined-dense"
@@ -85,11 +86,22 @@ class LoginComponent extends React.Component {
     );
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (!this.props.auth.loginResult && this.props !== prevProps) {
-      this.setState({
-        open: true,
-        alertText: "Please check your entries"
-      });
+    if (this.props.auth.loginResult) {
+      if (
+        this.props.auth.loginResult.code !== "0" &&
+        this.props !== prevProps
+      ) {
+        this.setState({
+          open: true,
+          alertText: "Please check your entries"
+        });
+      } else if (
+        this.props.auth.loginResult.code === "0" &&
+        this.props !== prevProps
+      ) {
+        localStorage.setItem("user", JSON.stringify(this.props.auth.loginResult.data));
+        window.location.reload();
+      }
     }
   }
 
