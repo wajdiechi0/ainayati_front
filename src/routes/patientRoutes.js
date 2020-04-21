@@ -1,6 +1,6 @@
 
 import DashboardPage from "../views/dashboardPages/Dashboard";
-import ProfilePage from "../views/dashboardPages/Profile";
+import ProfilePage from "../views/dashboardPages/Profile/PatientProfile";
 
 import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";

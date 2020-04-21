@@ -20,10 +20,12 @@ export default function CustomInput(props) {
     formControlProps,
     labelText,
     id,
+    type,
     labelProps,
     inputProps,
     error,
-    success
+    success,
+    onChange
   } = props;
 
   const labelClasses = classNames({
@@ -48,7 +50,8 @@ export default function CustomInput(props) {
           className={classes.labelRoot + labelClasses}
           htmlFor={id}
           {...labelProps}
-        >
+          shrink={true}
+          >
           {labelText}
         </InputLabel>
       ) : null}
@@ -59,6 +62,8 @@ export default function CustomInput(props) {
           underline: underlineClasses
         }}
         id={id}
+        onChange={onChange}
+        type={type}
         {...inputProps}
       />
       {error ? (
@@ -74,6 +79,8 @@ CustomInput.propTypes = {
   labelText: PropTypes.node,
   labelProps: PropTypes.object,
   id: PropTypes.string,
+  type: PropTypes.string,
+  shrink: PropTypes.bool,
   inputProps: PropTypes.object,
   formControlProps: PropTypes.object,
   error: PropTypes.bool,

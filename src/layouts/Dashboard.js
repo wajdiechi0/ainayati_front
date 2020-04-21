@@ -49,7 +49,7 @@ export default function Admin({ ...rest }) {
         logoText={"Ainayati"}
         logo={logo}
         image={bgImage}
-        color={"blue"}
+        color={"purple2"}
         {...rest}
       />
       <div className={classes.mainPanel}>

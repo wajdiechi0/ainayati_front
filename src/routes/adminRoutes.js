@@ -2,7 +2,7 @@
 import DashboardPage from "../views/dashboardPages/Dashboard";
 import DoctorsPage from "../views/dashboardPages/Doctors";
 import NursesPage from "../views/dashboardPages/Nurses";
-import AdminProfilePage from "../views/dashboardPages/AdminProfile";
+import AdminProfilePage from "../views/dashboardPages/Profile/AdminProfile";
 import PatientsPage from "../views/dashboardPages/Patients";
 
 import Dashboard from "@material-ui/icons/Dashboard";

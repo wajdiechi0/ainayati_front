@@ -12,7 +12,6 @@ import {
 
 const hist = createBrowserHistory();
 function App() {
-  console.log(JSON.parse(localStorage.getItem("user")));
   return (
     <Router history={hist}>
       <Switch>

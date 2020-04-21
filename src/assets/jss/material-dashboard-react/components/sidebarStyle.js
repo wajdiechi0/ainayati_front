@@ -155,6 +155,14 @@ const sidebarStyle = theme => ({
       ...primaryBoxShadow
     }
   },
+  purple2: {
+    backgroundColor: primaryColor[4],
+    ...primaryBoxShadow,
+    "&:hover,&:focus": {
+      backgroundColor: primaryColor[4],
+      ...primaryBoxShadow
+    }
+  },
   blue: {
     backgroundColor: infoColor[0],
     boxShadow:

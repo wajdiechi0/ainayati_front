@@ -4,6 +4,7 @@ export default function (state={},action) {
         case 'sendReset': return {...state,resetSendResult:action.payload}
         case 'login': return {...state,loginResult:action.payload}
         case 'register': return {...state,registerResult:action.payload}
+        case 'changePassword': return {...state,changePasswordResult:action.payload}
         default: return state;
     }
 }
