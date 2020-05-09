@@ -19,6 +19,7 @@ export default function CustomInput(props) {
   const {
     formControlProps,
     labelText,
+    defaultValue,
     id,
     type,
     labelProps,
@@ -61,6 +62,7 @@ export default function CustomInput(props) {
           disabled: classes.disabled,
           underline: underlineClasses
         }}
+        defaultValue={defaultValue}
         id={id}
         onChange={onChange}
         type={type}
@@ -77,6 +79,7 @@ export default function CustomInput(props) {
 
 CustomInput.propTypes = {
   labelText: PropTypes.node,
+  defaultValue: PropTypes.string,
   labelProps: PropTypes.object,
   id: PropTypes.string,
   type: PropTypes.string,

@@ -23,7 +23,7 @@ const styles = {
     margin: "0",
     fontSize: "14px",
     marginTop: "0",
-    marginBottom: "0"
+    marginBottom: "0",
   },
   cardTitleWhite: {
     color: "#FFFFFF",
@@ -32,8 +32,8 @@ const styles = {
     fontWeight: "300",
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
     marginBottom: "3px",
-    textDecoration: "none"
-  }
+    textDecoration: "none",
+  },
 };
 
 const useStyles = makeStyles(styles);
@@ -55,11 +55,11 @@ function Profile(props) {
 
   const dispatchUpdateProfile = () => {
     var validator = require("email-validator");
-    if (!validator.validate(email) || name===''){
+    if (!validator.validate(email) || name === "") {
       changeAlertText("Please check your entries");
       changeAlertForm(false);
-      openUpdateProfileAlert(true)
-    }else{
+      openUpdateProfileAlert(true);
+    } else {
       props.dispatch(
         updatePatientProfile(
           user.id,
@@ -70,26 +70,26 @@ function Profile(props) {
           weight,
           height,
           aboutMe,
-          user.token,
+          user.token
         )
       );
     }
-  }
-  
+  };
+
   useEffect(() => {
     document.title = "Profile";
   }, []);
   useEffect(() => {
     let result = props.updateProfile.updateProfileResult;
-    if(result){
-      if(result.code==='0'){
+    if (result) {
+      if (result.code === "0") {
         changeAlertText("Your profile has been successfully updated");
         changeAlertForm(true);
-        openUpdateProfileAlert(true)
-      }else if(result.code!=='0'){
+        openUpdateProfileAlert(true);
+      } else if (result.code !== "0") {
         changeAlertText("Please check your entries");
         changeAlertForm(false);
-        openUpdateProfileAlert(true)
+        openUpdateProfileAlert(true);
       }
     }
   }, [props.updateProfile]);
@@ -106,10 +106,11 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Name"
+                    defaultValue={user.name}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeName(e.target.value);
                     }}
                   />
@@ -117,11 +118,12 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Email address"
+                    defaultValue={user.email}
                     id="email-address"
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeEmail(e.target.value);
                     }}
                   />
@@ -129,11 +131,12 @@ function Profile(props) {
                 <GridItem xs={6}>
                   <CustomInput
                     labelText="Birthdate"
+                    defaultValue={user.birthdate}
                     type={"date"}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeBirthdate(e.target.value);
                     }}
                   />
@@ -143,10 +146,11 @@ function Profile(props) {
                 <GridItem xs={6}>
                   <CustomInput
                     labelText="Home address"
+                    defaultValue={user.home_address}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeHomeAddress(e.target.value);
                     }}
                   />
@@ -154,10 +158,11 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Weight (KG)"
+                    defaultValue={user.weight}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeWeight(e.target.value);
                     }}
                   />
@@ -165,10 +170,11 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Height (M)"
+                    defaultValue={user.height}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeHeight(e.target.value);
                     }}
                   />
@@ -178,14 +184,15 @@ function Profile(props) {
                 <GridItem xs={12}>
                   <InputLabel style={{ color: "#AAAAAA" }}>About me</InputLabel>
                   <CustomInput
+                    defaultValue={user.description}
                     formControlProps={{
-                      fullWidth: true
+                      fullWidth: true,
                     }}
                     inputProps={{
                       multiline: true,
-                      rows: 5
+                      rows: 5,
                     }}
-                    onChange={e => {
+                    onChange={(e) => {
                       changeAboutMe(e.target.value);
                     }}
                   />
@@ -193,7 +200,9 @@ function Profile(props) {
               </GridContainer>
             </CardBody>
             <CardFooter>
-              <Button color="primary" onClick={dispatchUpdateProfile}>Update Profile</Button>
+              <Button color="primary" onClick={dispatchUpdateProfile}>
+                Update Profile
+              </Button>
             </CardFooter>
           </Card>
         </GridItem>
@@ -237,7 +246,7 @@ function Profile(props) {
 
 function mapStateToProps(state) {
   return {
-    updateProfile: state.profileReducer
+    updateProfile: state.profileReducer,
   };
 }
 

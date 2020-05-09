@@ -7,42 +7,63 @@ import {
   Login,
   Register,
   Reset,
-  ResetLink
+  ResetLink,
 } from "./views/authentication/index";
-
 const hist = createBrowserHistory();
 function App() {
   return (
     <Router history={hist}>
       <Switch>
-        <Route path="/login" render={() =>
+        <Route
+          path="/"
+          render={() =>
+            !JSON.parse(localStorage.getItem("user")) ? (
+              <Login />
+            ) : (
+              <Dashboard/>
+            )
+          }
+        />
+        <Route
+          path="/login"
+          render={() =>
             !JSON.parse(localStorage.getItem("user")) ? (
               <Login />
             ) : (
               <Redirect to="/dashboard" />
             )
-          }/>
-        <Route path="/register" render={() =>
+          }
+        />
+        <Route
+          path="/register"
+          render={() =>
             !JSON.parse(localStorage.getItem("user")) ? (
               <Register />
             ) : (
               <Redirect to="/dashboard" />
             )
-          }/>
-        <Route path="/resetpassword" render={() =>
+          }
+        />
+        <Route
+          path="/resetpassword"
+          render={() =>
             !JSON.parse(localStorage.getItem("user")) ? (
               <Reset />
             ) : (
               <Redirect to="/dashboard" />
             )
-          }/>
-        <Route path="/password/reset/:token" render={() =>
+          }
+        />
+        <Route
+          path="/password/reset/:token"
+          render={() =>
             !JSON.parse(localStorage.getItem("user")) ? (
               <ResetLink />
             ) : (
               <Redirect to="/dashboard" />
             )
-          }/>
+          }
+        />
         <Route
           path="/dashboard"
           render={() =>

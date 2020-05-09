@@ -9,25 +9,25 @@ import Patients from "@material-ui/icons/Favorite";
 
 const dashboardRoutes = [
   {
-    path: "/nurse",
+    path: "",
     name: "Dashboard",
     icon: Dashboard,
     component: DashboardPage,
     layout: "/dashboard"
   },
   {
-    path: "/profile",
+    path: "/",
     name: "Profile",
     icon: Person,
     component: ProfilePage,
-    layout: "/dashboard"
+    layout: "/profile"
   },
   {
-    path: "/patients",
+    path: "/",
     name: "Patients",
     icon: Patients,
     component: PatientsPage,
-    layout: "/dashboard"
+    layout: "/patients"
   }
 ];
 

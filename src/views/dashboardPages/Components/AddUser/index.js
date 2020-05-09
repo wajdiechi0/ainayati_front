@@ -11,7 +11,8 @@ import {
   fetchDoctorList,
   fetchAdminList,
   fetchNurseList,
-  fetchPatientList
+  fetchPatientList,
+  affectDoctorPatient
 } from "../../../../redux/actions";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -37,7 +38,7 @@ function AddUserComponent(props) {
   const [success, changeAlertForm] = useState(true);
 
   useEffect(() => {
-    let result = props.crudUser.addDoctorResult;
+    let result = props.crudUser.addUserResult;
     if (result) {
       changeAlertText(result.message);
       openAlert(true);
@@ -56,15 +57,18 @@ function AddUserComponent(props) {
             break;
           case "patient":
             props.dispatch(fetchPatientList(JSON.parse(localStorage.getItem("user")).token));
+            if(JSON.parse(localStorage.getItem("user")).type === "doctor"){
+              props.dispatch(affectDoctorPatient(result.data.id,JSON.parse(localStorage.getItem("user")).id, JSON.parse(localStorage.getItem("user")).token));
+            }
             break;
           default:
             break;
         }
         changeAlertForm(true);
       }
-      props.crudUser.addDoctorResult = null;
+      props.crudUser.addUserResult = null;
     }
-  }, [props.crudUser.addDoctorResult, props]);
+  }, [props.crudUser.addUserResult, props]);
   return (
     <div>
       <Dialog open={props.open} onClose={props.close}>

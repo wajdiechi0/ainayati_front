@@ -13,39 +13,39 @@ import Admins from "@material-ui/icons/VpnKey";
 
 const dashboardRoutes = [
   {
-    path: "/superadmin",
+    path: "",
     name: "Dashboard",
     icon: Dashboard,
     component: DashboardPage,
     layout: "/dashboard"
   },
   {
-    path: "/admins",
+    path: "/",
     name: "Admins",
     icon: Admins,
     component: AdminsPage,
-    layout: "/dashboard"
+    layout: "/admins"
   },
   {
-    path: "/doctors",
+    path: "/",
     name: "Doctors",
     icon: Doctors,
     component: DoctorsPage,
-    layout: "/dashboard"
+    layout: "/doctors"
   },
   {
-    path: "/nurses",
+    path: "/",
     name: "Nurses",
     icon: Nurses,
     component: NursesPage,
-    layout: "/dashboard"
+    layout: "/nurses"
   },
   {
-    path: "/patients",
+    path: "/",
     name: "Patients",
     icon: Patients,
     component: PatientsPage,
-    layout: "/dashboard"
+    layout: "/patients"
   }
 ];
 

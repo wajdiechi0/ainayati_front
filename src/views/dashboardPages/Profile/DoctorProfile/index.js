@@ -106,6 +106,7 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Name"
+                    defaultValue={user.name}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -118,6 +119,7 @@ function Profile(props) {
                   <CustomInput
                     labelText="Email address"
                     id="email-address"
+                    defaultValue={user.email}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -130,6 +132,7 @@ function Profile(props) {
                   <CustomInput
                     labelText="Birthdate"
                     type={"date"}
+                    defaultValue={user.birthdate}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -141,6 +144,7 @@ function Profile(props) {
                 <GridItem xs={3}>
                   <CustomInput
                     labelText="Specialty"
+                    defaultValue={user.specialty}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -154,6 +158,7 @@ function Profile(props) {
                 <GridItem xs={6}>
                   <CustomInput
                     labelText="Work address"
+                    defaultValue={user.work_address}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -165,6 +170,7 @@ function Profile(props) {
                 <GridItem xs={6}>
                   <CustomInput
                     labelText="Home address"
+                    defaultValue={user.home_address}
                     id="last-name"
                     formControlProps={{
                       fullWidth: true
@@ -180,6 +186,7 @@ function Profile(props) {
                   <InputLabel style={{ color: "#AAAAAA" }}>About me</InputLabel>
                   <CustomInput
                     id="about-me"
+                    defaultValue={user.description}
                     formControlProps={{
                       fullWidth: true
                     }}

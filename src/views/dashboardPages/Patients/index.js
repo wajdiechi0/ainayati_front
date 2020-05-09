@@ -11,8 +11,13 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
 
 import { connect } from "react-redux";
-import { fetchPatientList, removeUser } from "./../../../redux/actions";
+import {
+  fetchPatientList,
+  removeUser,
+  removeAffect,
+} from "./../../../redux/actions";
 import AddPatient from "../Components/AddUser";
+import AffectRequests from "../Components/doctorAffectRequests";
 import EditPatient from "../Components/EditUser";
 class Patients extends Component {
   constructor(props) {
@@ -22,24 +27,35 @@ class Patients extends Component {
       idEdit: "",
       editPatient: {},
       addPatientOpen: false,
-      editPatientOpen: false
+      editPatientOpen: false,
+      affectRequestsOpen: false,
     };
   }
 
   reloadUserList(filtered) {
     this.setState({
-      patients: filtered
+      patients: filtered,
     });
   }
 
   deleteUser(userId) {
-    var filtered = this.state.patients.filter(value => {
+    var filtered = this.state.patients.filter((value) => {
       return value.id !== userId;
     });
     this.reloadUserList(filtered);
-    this.props.dispatch(
-      removeUser(userId, JSON.parse(localStorage.getItem("user")).token)
-    );
+    if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
+      this.props.dispatch(
+        removeAffect(
+          JSON.parse(localStorage.getItem("user")).id,
+          userId,
+          JSON.parse(localStorage.getItem("user")).token
+        )
+      );
+    } else {
+      this.props.dispatch(
+        removeUser(userId, JSON.parse(localStorage.getItem("user")).token)
+      );
+    }
   }
 
   render() {
@@ -48,15 +64,27 @@ class Patients extends Component {
         <Typography variant="h4" style={style}>
           Patient List
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ background: "#9c27b0", color: "#fff" }}
-          onClick={() => {this.setState({addPatientOpen: true})}}
-        >
-          Add a patient
-        </Button>
-
+        <div style={{display: "flex"}}>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ background: "#9c27b0", color: "#fff" }}
+            onClick={() => {
+              this.setState({ addPatientOpen: true });
+            }}
+          >
+            Add a patient
+          </Button>
+          <Button
+            onClick={() => {
+              this.setState({ affectRequestsOpen: true });
+            }}
+            style={{ marginLeft: "auto", background: "#00acc1", color: "#fff" }}
+            color={"primary"}
+          >
+            Affect Requests
+          </Button>
+        </div>
         <Table>
           <TableHead>
             <TableRow>
@@ -68,12 +96,14 @@ class Patients extends Component {
               <TableCell align="right">Weight(KG)</TableCell>
               <TableCell align="right">Height(M)</TableCell>
               <TableCell align="right">Gender</TableCell>
-              <TableCell align="right" />
+              {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
+                <TableCell align="right" />
+              )}
               <TableCell align="right" />
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.patients.map(row => (
+            {this.state.patients.map((row) => (
               <TableRow key={row.id}>
                 <TableCell component="th" scope="row">
                   {row.id}
@@ -85,15 +115,20 @@ class Patients extends Component {
                 <TableCell align="right">{row.weight}</TableCell>
                 <TableCell align="right">{row.height}</TableCell>
                 <TableCell align="right">{row.gender}</TableCell>
-                <TableCell align="right">
-                <IconButton onClick={() => {
-                    this.setState({
-                      editPatient: row,
-                      editPatientOpen: true
-                    })
-                  }}>                    <CreateIcon style={{ color: "#0033cc" }} />
-                  </IconButton>
-                </TableCell>
+                {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => {
+                        this.setState({
+                          editPatient: row,
+                          editPatientOpen: true,
+                        });
+                      }}
+                    >
+                      <CreateIcon style={{ color: "#0033cc" }} />
+                    </IconButton>
+                  </TableCell>
+                )}
                 <TableCell align="right">
                   <IconButton onClick={() => this.deleteUser(row.id)}>
                     <DeleteIcon style={{ color: "red" }} />
@@ -118,6 +153,12 @@ class Patients extends Component {
           }}
           editUser={this.state.editPatient}
         />
+        <AffectRequests
+          open={this.state.affectRequestsOpen}
+          close={() => {
+            this.setState({ affectRequestsOpen: false });
+          }}
+        />
       </div>
     );
   }
@@ -126,7 +167,7 @@ class Patients extends Component {
     if (this.props.crudUser.patientList && prevProps !== this.props) {
       if (this.props.crudUser.patientList.code === "0") {
         this.setState({
-          patients: this.props.crudUser.patientList.data
+          patients: this.props.crudUser.patientList.data,
         });
       }
       this.props.crudUser.patientList = null;
@@ -141,12 +182,12 @@ class Patients extends Component {
 
 const style = {
   display: "flex",
-  justifyContent: "center"
+  justifyContent: "center",
 };
 
 function mapStateToProps(state) {
   return {
-    crudUser: state.crudReducer
+    crudUser: state.crudReducer,
   };
 }
 export default connect(mapStateToProps)(Patients);

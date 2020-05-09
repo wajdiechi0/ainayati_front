@@ -94,6 +94,7 @@ function Profile(props) {
                 <GridItem xs={12}>
                   <CustomInput
                     labelText="Name"
+                    defaultValue={user.name}
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -105,6 +106,7 @@ function Profile(props) {
                 <GridItem xs={12}>
                   <CustomInput
                     labelText="Email address"
+                    defaultValue={user.email}
                     formControlProps={{
                       fullWidth: true
                     }}

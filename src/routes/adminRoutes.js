@@ -13,39 +13,39 @@ import Nurses from "@material-ui/icons/LocalHospital";
 
 const dashboardRoutes = [
   {
-    path: "/admin",
+    path: "",
     name: "Dashboard",
     icon: Dashboard,
     component: DashboardPage,
     layout: "/dashboard"
   },
   {
-    path: "/profile",
+    path: "/",
     name: "Profile",
     icon: Person,
     component: AdminProfilePage,
-    layout: "/dashboard"
+    layout: "/profile"
   },
   {
-    path: "/doctors",
+    path: "/",
     name: "Doctors",
     icon: Doctors,
     component: DoctorsPage,
-    layout: "/dashboard"
+    layout: "/doctors"
   },
   {
-    path: "/nurses",
+    path: "/",
     name: "Nurses",
     icon: Nurses,
     component: NursesPage,
-    layout: "/dashboard"
+    layout: "/nurses"
   },
   {
-    path: "/patients",
+    path: "/",
     name: "Patients",
     icon: Patients,
     component: PatientsPage,
-    layout: "/dashboard"
+    layout: "/patients"
   }
 ];
 
