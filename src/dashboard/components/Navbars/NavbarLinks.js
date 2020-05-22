@@ -41,7 +41,10 @@ export default function AdminNavbarLinks(props) {
     }
   };
   const handleCloseProfile = () => {
-    history.push("/dashboard/profile");
+    setOpenProfile(null);
+  };
+  const showProfile = () => {
+    history.push("/profile");
     setOpenProfile(null);
   };
   const signOut = () => {
@@ -135,12 +138,13 @@ export default function AdminNavbarLinks(props) {
               <Paper>
                 <ClickAwayListener onClickAway={handleCloseProfile}>
                   <MenuList role="menu">
+                    {JSON.parse(localStorage.getItem("user")).type !== "super admin" &&
                     <MenuItem
-                      onClick={handleCloseProfile}
+                      onClick={showProfile}
                       className={classes.dropdownItem}
                     >
                       Profile
-                    </MenuItem>
+                    </MenuItem>}
                     <Divider light />
                     <MenuItem
                       onClick={signOut}

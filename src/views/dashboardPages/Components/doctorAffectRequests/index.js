@@ -11,10 +11,13 @@ import Button from "../../../../dashboard/components/CustomButtons/Button.js";
 import Close from "@material-ui/icons/Close";
 import { connect } from "react-redux";
 import {
-  denyAffectRequest,
-  acceptAffectRequest,
+  denyAffectRequestDoctorNurse,
+  acceptAffectRequestDoctorNurse,
+  fetchAffectRequestsDoctorNurse,
   fetchAffectRequests,
-  fetchPatientList,
+  acceptAffectRequest,
+  denyAffectRequest,
+  fetchNurseList,
 } from "../../../../redux/actions";
 import ResultAlert from "../../../authentication/components/alert";
 
@@ -26,12 +29,19 @@ function AffectRequestComponent(props) {
   const [success, changeAlertForm] = useState(true);
 
   useEffect(() => {
-    props.dispatch(
-      fetchAffectRequests(
-        JSON.parse(localStorage.getItem("user")).id,
-        JSON.parse(localStorage.getItem("user")).token
-      )
-    );
+    props.type === "nurse"
+      ? props.dispatch(
+          fetchAffectRequestsDoctorNurse(
+            JSON.parse(localStorage.getItem("user")).id,
+            JSON.parse(localStorage.getItem("user")).token
+          )
+        )
+      : props.dispatch(
+          fetchAffectRequests(
+            JSON.parse(localStorage.getItem("user")).id,
+            JSON.parse(localStorage.getItem("user")).token
+          )
+        );
   }, []);
   useEffect(() => {
     let result = props.crudUser.fetchAffectRequests;
@@ -50,22 +60,20 @@ function AffectRequestComponent(props) {
         changeAlertForm(true);
         openAlert(true);
         props.dispatch(
-          fetchAffectRequests(
+          fetchAffectRequestsDoctorNurse(
             JSON.parse(localStorage.getItem("user")).id,
             JSON.parse(localStorage.getItem("user")).token
           )
         );
         props.dispatch(
-          fetchPatientList(
-            JSON.parse(localStorage.getItem("user")).token
-          )
+          fetchNurseList(JSON.parse(localStorage.getItem("user")).token)
         );
       } else {
         changeAlertText(result.message ? result.message : "Error !");
         changeAlertForm(false);
         openAlert(true);
       }
-      props.crudUser.acceptAffectRequest = null;
+      props.crudUser.acceptAffectRequestDoctorNurse = null;
     }
   }, [props.crudUser.acceptAffectRequest]);
 
@@ -77,7 +85,7 @@ function AffectRequestComponent(props) {
         changeAlertForm(true);
         openAlert(true);
         props.dispatch(
-          fetchAffectRequests(
+          fetchAffectRequestsDoctorNurse(
             JSON.parse(localStorage.getItem("user")).id,
             JSON.parse(localStorage.getItem("user")).token
           )
@@ -95,7 +103,9 @@ function AffectRequestComponent(props) {
       <Dialog open={props.open} onClose={props.close} maxWidth={"md"}>
         <div className={"affectRequestsContainer"}>
           <div className={"affectRequestTitle"}>
-            <h3 style={{ marginLeft: "auto" }}>Patient affect requests</h3>
+            <h3 style={{ marginLeft: "auto" }}>
+              {props.type === "patient" ? "Patient" : "Nurse"} affect requests
+            </h3>
             <IconButton style={{ marginLeft: "auto" }} onClick={props.close}>
               <Close />
             </IconButton>
@@ -127,9 +137,11 @@ function AffectRequestComponent(props) {
                   <TableCell align="right" style={{ fontWeight: "bold" }}>
                     Home address
                   </TableCell>
-                  <TableCell align="right" style={{ fontWeight: "bold" }}>
-                    Gender
-                  </TableCell>
+                  {props.type === "patient" && (
+                    <TableCell align="right" style={{ fontWeight: "bold" }}>
+                      Gender
+                    </TableCell>
+                  )}
                   <TableCell align="right" />
                   <TableCell align="right" />
                 </TableRow>
@@ -144,17 +156,27 @@ function AffectRequestComponent(props) {
                     <TableCell align="right">{row.email}</TableCell>
                     <TableCell align="right">{row.birthdate}</TableCell>
                     <TableCell align="right">{row.home_address}</TableCell>
-                    <TableCell align="right">{row.gender}</TableCell>
+                    {props.type === "patient" && (
+                      <TableCell align="right">{row.gender}</TableCell>
+                    )}
                     <TableCell align="right">
                       <Button
                         onClick={() => {
-                          props.dispatch(
-                            acceptAffectRequest(
-                              row.id,
-                              JSON.parse(localStorage.getItem("user")).id,
-                              JSON.parse(localStorage.getItem("user")).token
-                            )
-                          );
+                          props.type === "nurse"
+                            ? props.dispatch(
+                                acceptAffectRequestDoctorNurse(
+                                  row.id,
+                                  JSON.parse(localStorage.getItem("user")).id,
+                                  JSON.parse(localStorage.getItem("user")).token
+                                )
+                              )
+                            : props.dispatch(
+                                acceptAffectRequest(
+                                  row.id,
+                                  JSON.parse(localStorage.getItem("user")).id,
+                                  JSON.parse(localStorage.getItem("user")).token
+                                )
+                              );
                         }}
                         color={"info"}
                         style={{
@@ -168,13 +190,21 @@ function AffectRequestComponent(props) {
                     <TableCell align="right">
                       <Button
                         onClick={() => {
-                          props.dispatch(
-                            denyAffectRequest(
-                              row.id,
-                              JSON.parse(localStorage.getItem("user")).id,
-                              JSON.parse(localStorage.getItem("user")).token
-                            )
-                          );
+                          props.type === "nurse"
+                            ? props.dispatch(
+                                denyAffectRequestDoctorNurse(
+                                  row.id,
+                                  JSON.parse(localStorage.getItem("user")).id,
+                                  JSON.parse(localStorage.getItem("user")).token
+                                )
+                              )
+                            : props.dispatch(
+                                denyAffectRequest(
+                                  row.id,
+                                  JSON.parse(localStorage.getItem("user")).id,
+                                  JSON.parse(localStorage.getItem("user")).token
+                                )
+                              );
                         }}
                         color={"danger"}
                         style={{
@@ -197,7 +227,11 @@ function AffectRequestComponent(props) {
                 justifyContent: "center",
               }}
             >
-              <span style={{fontWeight: 'lighter', fontSize:15, marginTop: 20}}>There is no affect requests for you</span>
+              <span
+                style={{ fontWeight: "lighter", fontSize: 15, marginTop: 20 }}
+              >
+                There is no affect requests for you
+              </span>
             </div>
           )}
         </div>

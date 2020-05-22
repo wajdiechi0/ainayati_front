@@ -13,6 +13,7 @@ import Close from "@material-ui/icons/Close";
 import { connect } from "react-redux";
 import {
   sendAffectRequest,
+  sendAffectRequestDoctorNurse,
   fetchDoctorListBySpecialty,
 } from "../../../../redux/actions";
 import ResultAlert from "../../../authentication/components/alert";
@@ -41,8 +42,8 @@ function AffectRequestComponent(props) {
         changeAlertText(result.message);
         changeAlertForm(true);
         openAlert(true);
-      }else{
-        changeAlertText(result.message? result.message: "Error !");
+      } else {
+        changeAlertText(result.message ? result.message : "Error !");
         changeAlertForm(false);
         openAlert(true);
       }
@@ -105,11 +106,21 @@ function AffectRequestComponent(props) {
             <TableHead>
               <TableRow>
                 <TableCell>Id</TableCell>
-                <TableCell align="right" style={{fontWeight:'bold'}}>Name</TableCell>
-                <TableCell align="right" style={{fontWeight:'bold'}}>Email</TableCell>
-                <TableCell align="right" style={{fontWeight:'bold'}}>Work Address</TableCell>
-                <TableCell align="right" style={{fontWeight:'bold'}}>Specialty</TableCell>
-                <TableCell align="right" style={{fontWeight:'bold'}}>Gender</TableCell>
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Name
+                </TableCell>
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Email
+                </TableCell>
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Work Address
+                </TableCell>
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Specialty
+                </TableCell>
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Gender
+                </TableCell>
                 <TableCell align="right" />
               </TableRow>
             </TableHead>
@@ -127,13 +138,21 @@ function AffectRequestComponent(props) {
                   <TableCell align="right">
                     <Button
                       onClick={() => {
-                        props.dispatch(
-                          sendAffectRequest(
-                            row.id,
-                            JSON.parse(localStorage.getItem("user")).id,
-                            JSON.parse(localStorage.getItem("user")).token
-                          )
-                        );
+                        props.type === "nurse"
+                          ? props.dispatch(
+                              sendAffectRequestDoctorNurse(
+                                row.id,
+                                JSON.parse(localStorage.getItem("user")).id,
+                                JSON.parse(localStorage.getItem("user")).token
+                              )
+                            )
+                          : props.dispatch(
+                              sendAffectRequest(
+                                row.id,
+                                JSON.parse(localStorage.getItem("user")).id,
+                                JSON.parse(localStorage.getItem("user")).token
+                              )
+                            );
                       }}
                       color={"info"}
                       style={{

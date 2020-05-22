@@ -13,7 +13,6 @@ import nurseRoutes from "../routes/nurseRoutes.js";
 import patientRoutes from "../routes/patientRoutes.js";
 
 import styles from "../assets/jss/material-dashboard-react/layouts/adminStyle.js";
-
 import bgImage from "./../assets/img/sidebar-2.jpg";
 import logo from "./../assets/logo/logoWithNoText.png";
 

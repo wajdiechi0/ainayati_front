@@ -3,9 +3,11 @@ import DashboardPage from "../views/dashboardPages/Dashboard";
 import DoctorsPage from "../views/dashboardPages/Doctors";
 import ProfilePage from "../views/dashboardPages/Profile/PatientProfile";
 import Doctors from "@material-ui/icons/AssignmentInd";
+import AppontmentsPage from "../views/dashboardPages/Appointments";
 
 import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";
+import Appointment from "@material-ui/icons/EventNote";
 
 
 const dashboardRoutes = [
@@ -29,6 +31,13 @@ const dashboardRoutes = [
     icon: Doctors,
     component: DoctorsPage,
     layout: "/doctors"
+  },
+  {
+    path: "/",
+    name: "My Appointments",
+    icon: Appointment,
+    component: AppontmentsPage,
+    layout: "/appointments"
   }
 ];
 

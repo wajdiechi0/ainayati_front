@@ -11,8 +11,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
 
 import { connect } from "react-redux";
-import { fetchNurseList, removeUser } from "./../../../redux/actions";
+import { fetchNurseList, removeUser ,removeAffectDoctorNurse} from "./../../../redux/actions";
 import AddNurse from "./../Components/AddUser";
+import AffectRequests from "../Components/doctorAffectRequests";
 import EditNurse from "./../Components/EditUser";
 class Nurses extends Component {
   constructor(props) {
@@ -22,24 +23,36 @@ class Nurses extends Component {
       idEdit: "",
       editNurse: {},
       addNurseOpen: false,
-      editNurseOpen: false
+      editNurseOpen: false,
+      affectRequestsOpen: false,
     };
   }
 
   reloadUserList(filtered) {
     this.setState({
-      nurses: filtered
+      nurses: filtered,
     });
   }
 
   deleteUser(userId) {
-    var filtered = this.state.nurses.filter(value => {
+    var filtered = this.state.nurses.filter((value) => {
       return value.id !== userId;
     });
     this.reloadUserList(filtered);
-    this.props.dispatch(
-      removeUser(userId, JSON.parse(localStorage.getItem("user")).token)
-    );
+
+    if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
+      this.props.dispatch(
+        removeAffectDoctorNurse(
+          JSON.parse(localStorage.getItem("user")).id,
+          userId,
+          JSON.parse(localStorage.getItem("user")).token
+        )
+      );
+    } else {
+      this.props.dispatch(
+        removeUser(userId, JSON.parse(localStorage.getItem("user")).token)
+      );
+    }
   }
 
   render() {
@@ -48,33 +61,62 @@ class Nurses extends Component {
         <Typography variant="h4" style={style}>
           Nurse List
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          style={{ background: "#9c27b0", color: "#fff" }}
-          onClick={() => {
-            this.setState({ addNurseOpen: true });
-          }}
-        >
-          Add a nurse
-        </Button>
+        <div style={{ display: "flex", marginTop: 30 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            style={{ background: "#9c27b0", color: "#fff" }}
+            onClick={() => {
+              this.setState({ addNurseOpen: true });
+            }}
+          >
+            Add a nurse
+          </Button>
+          {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+            <Button
+              onClick={() => {
+                this.setState({ affectRequestsOpen: true });
+              }}
+              style={{
+                marginLeft: "auto",
+                background: "#00acc1",
+                color: "#fff",
+              }}
+              color={"primary"}
+            >
+              Affect Requests
+            </Button>
+          )}
+        </div>
 
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">email</TableCell>
-              <TableCell align="right">Birthdate</TableCell>
-              <TableCell align="right">Home Address</TableCell>
-              <TableCell align="right">Work Address</TableCell>
-              <TableCell align="right">Gender</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Name
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                email
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Birthdate
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Home Address
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Work Address
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Gender
+              </TableCell>
               <TableCell align="right" />
               <TableCell align="right" />
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.nurses.map(row => (
+            {this.state.nurses.map((row) => (
               <TableRow key={row.id}>
                 <TableCell component="th" scope="row">
                   {row.id}
@@ -90,7 +132,7 @@ class Nurses extends Component {
                     onClick={() => {
                       this.setState({
                         editNurse: row,
-                        editNurseOpen: true
+                        editNurseOpen: true,
                       });
                     }}
                   >
@@ -122,6 +164,13 @@ class Nurses extends Component {
           editUser={this.state.editNurse}
           type="nurse"
         />
+        <AffectRequests
+          open={this.state.affectRequestsOpen}
+          type="nurse"
+          close={() => {
+            this.setState({ affectRequestsOpen: false });
+          }}
+        />
       </div>
     );
   }
@@ -130,13 +179,14 @@ class Nurses extends Component {
     if (this.props.crudUser.nurseList && prevProps !== this.props) {
       if (this.props.crudUser.nurseList.code === "0") {
         this.setState({
-          nurses: this.props.crudUser.nurseList.data
+          nurses: this.props.crudUser.nurseList.data,
         });
       }
       this.props.crudUser.nurseList = null;
     }
   }
   componentDidMount() {
+    document.title = "Nurses";
     this.props.dispatch(
       fetchNurseList(JSON.parse(localStorage.getItem("user")).token)
     );
@@ -145,12 +195,12 @@ class Nurses extends Component {
 
 const style = {
   display: "flex",
-  justifyContent: "center"
+  justifyContent: "center",
 };
 
 function mapStateToProps(state) {
   return {
-    crudUser: state.crudReducer
+    crudUser: state.crudReducer,
   };
 }
 export default connect(mapStateToProps)(Nurses);

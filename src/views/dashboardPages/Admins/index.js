@@ -22,18 +22,18 @@ class Admins extends Component {
       idEdit: "",
       editAdmin: {},
       addAdminOpen: false,
-      editAdminOpen: false
+      editAdminOpen: false,
     };
   }
 
   reloadUserList(filtered) {
     this.setState({
-      admins: filtered
+      admins: filtered,
     });
   }
 
   deleteUser(userId) {
-    var filtered = this.state.admins.filter(value => {
+    var filtered = this.state.admins.filter((value) => {
       return value.id !== userId;
     });
     this.reloadUserList(filtered);
@@ -51,7 +51,7 @@ class Admins extends Component {
         <Button
           variant="contained"
           color="primary"
-          style={{ background: "#9c27b0", color: "#fff" }}
+          style={{ background: "#9c27b0", color: "#fff", marginTop: 30 }}
           onClick={() => {
             this.setState({ addAdminOpen: true });
           }}
@@ -62,15 +62,19 @@ class Admins extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">email</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Name
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                email
+              </TableCell>
               <TableCell align="right" />
               <TableCell align="right" />
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.admins.map(row => (
+            {this.state.admins.map((row) => (
               <TableRow key={row.id}>
                 <TableCell component="th" scope="row">
                   {row.id}
@@ -82,7 +86,7 @@ class Admins extends Component {
                     onClick={() => {
                       this.setState({
                         editAdmin: row,
-                        editAdminOpen: true
+                        editAdminOpen: true,
                       });
                     }}
                   >
@@ -105,7 +109,7 @@ class Admins extends Component {
             this.setState({ addAdminOpen: false });
           }}
           type="admin"
-          />
+        />
         <EditAdmin
           open={this.state.editAdminOpen}
           close={() => {
@@ -113,7 +117,7 @@ class Admins extends Component {
           }}
           editUser={this.state.editAdmin}
           type="admin"
-          />
+        />
       </div>
     );
   }
@@ -122,7 +126,7 @@ class Admins extends Component {
     if (this.props.crudUser.adminList && prevProps !== this.props) {
       if (this.props.crudUser.adminList.code === "0") {
         this.setState({
-          admins: this.props.crudUser.adminList.data
+          admins: this.props.crudUser.adminList.data,
         });
       }
       this.props.crudUser.adminList = null;
@@ -137,12 +141,12 @@ class Admins extends Component {
 
 const style = {
   display: "flex",
-  justifyContent: "center"
+  justifyContent: "center",
 };
 
 function mapStateToProps(state) {
   return {
-    crudUser: state.crudReducer
+    crudUser: state.crudReducer,
   };
 }
 export default connect(mapStateToProps)(Admins);

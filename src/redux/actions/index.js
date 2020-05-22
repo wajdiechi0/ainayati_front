@@ -294,6 +294,19 @@ export async function fetchDoctorList(token) {
         }
       )
       .then((response) => response.data);
+  } else if (JSON.parse(localStorage.getItem("user")).type === "nurse") {
+    result = await axios
+      .get(
+        "http://127.0.0.1:8000/api/nurseDoctorList?id_nurse=" +
+          JSON.parse(localStorage.getItem("user")).id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => response.data);
   } else {
     result = await axios
       .get("http://127.0.0.1:8000/api/doctorList", {
@@ -311,14 +324,30 @@ export async function fetchDoctorList(token) {
 }
 
 export async function fetchNurseList(token) {
-  let result = await axios
-    .get("http://127.0.0.1:8000/api/nurseList", {
-      headers: {
-        Authorization: "Bearer " + token,
-        Accept: "application/json",
-      },
-    })
-    .then((response) => response.data);
+  let result;
+  if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
+    result = await axios
+      .get(
+        "http://127.0.0.1:8000/api/doctorNurseList?id_doctor=" +
+          JSON.parse(localStorage.getItem("user")).id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => response.data);
+  } else {
+    result = await axios
+      .get("http://127.0.0.1:8000/api/nurseList", {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      })
+      .then((response) => response.data);
+  }
   return {
     type: "nurseList",
     payload: result,
@@ -331,6 +360,19 @@ export async function fetchPatientList(token) {
     result = await axios
       .get(
         "http://127.0.0.1:8000/api/doctorPatientList?id_doctor=" +
+          JSON.parse(localStorage.getItem("user")).id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => response.data);
+  } else if (JSON.parse(localStorage.getItem("user")).type === "nurse") {
+    result = await axios
+      .get(
+        "http://127.0.0.1:8000/api/nursePatientList?id_nurse=" +
           JSON.parse(localStorage.getItem("user")).id,
         {
           headers: {
@@ -370,7 +412,7 @@ export async function removeUser(id, token) {
     payload: result,
   };
 }
-export async function removeAffect(idDoctor, idPatient, token) {
+export async function removeAffectDoctorPatient(idDoctor, idPatient, token) {
   let result = await axios
     .delete(
       "http://127.0.0.1:8000/api/removeAffect?id_doctor=" +
@@ -390,8 +432,28 @@ export async function removeAffect(idDoctor, idPatient, token) {
     payload: result,
   };
 }
+export async function removeAffectDoctorNurse(idDoctor, idNurse, token) {
+  let result = await axios
+    .delete(
+      "http://127.0.0.1:8000/api/removeAffectDoctorNurse?id_doctor=" +
+        idDoctor +
+        "&id_nurse=" +
+        idNurse,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "removeUser",
+    payload: result,
+  };
+}
 
-export async function addNewUser(newProfile, type, token) {
+export async function addNewUser(newProfile, type, doctorID, token) {
   let result = await axios
     .post(
       "http://127.0.0.1:8000/api/register" +
@@ -414,6 +476,24 @@ export async function addNewUser(newProfile, type, token) {
       "http://127.0.0.1:8000/api/affectDoctorPatient",
       {
         id_doctor: JSON.parse(localStorage.getItem("user")).id,
+        id_patient: result.data.id,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    );
+  }
+  if (
+    JSON.parse(localStorage.getItem("user")).type === "nurse" &&
+    doctorID !== ""
+  ) {
+    let affectResult = await axios.post(
+      "http://127.0.0.1:8000/api/affectDoctorPatient",
+      {
+        id_doctor: doctorID,
         id_patient: result.data.id,
       },
       {
@@ -495,7 +575,29 @@ export async function affectDoctorPatient(id_patient, id_doctor, token) {
     )
     .then((response) => response.data);
   return {
-    type: "sendAffectRequest",
+    type: "AffectRequest",
+    payload: result,
+  };
+}
+export async function sendAppointmentRequest(id_doctor, id_patient, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/sendAppointmentRequest",
+      {
+        id_doctor,
+        id_patient,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "sendAppointmentRequest",
     payload: result,
   };
 }
@@ -524,7 +626,7 @@ export async function sendAffectRequest(id_doctor, id_patient, token) {
 export async function fetchAffectRequests(id_doctor, token) {
   let result = await axios
     .get(
-      "http://127.0.0.1:8000/api/fetchAffectRequests?id_doctor="+id_doctor,
+      "http://127.0.0.1:8000/api/fetchAffectRequests?id_doctor=" + id_doctor,
       {
         headers: {
           Authorization: "Bearer " + token,
@@ -535,6 +637,40 @@ export async function fetchAffectRequests(id_doctor, token) {
     .then((response) => response.data);
   return {
     type: "fetchAffectRequests",
+    payload: result,
+  };
+}
+
+export async function fetchAppointmentRequests(id, token) {
+  let result;
+  if (JSON.parse(localStorage.getItem("user")).type == "doctor") {
+    result = await axios
+      .get(
+        "http://127.0.0.1:8000/api/fetchAppointmentRequests?id_doctor=" + id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => response.data);
+  } else {
+    result = await axios
+      .get(
+        "http://127.0.0.1:8000/api/fetchNurseAppointmentRequests?id_nurse=" +
+          id,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => response.data);
+  }
+  return {
+    type: "fetchAppointmentRequests",
     payload: result,
   };
 }
@@ -577,11 +713,496 @@ export async function denyAffectRequest(id_patient, id_doctor, token) {
       }
     )
     .then((response) => response.data);
-    console.log(result);
-
   return {
     type: "denyAffectRequest",
     payload: result,
   };
 }
 
+export async function denyAppointmentRequest(id_patient, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/denyAppointmentRequest",
+      {
+        id_doctor,
+        id_patient,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  console.log(result);
+  return {
+    type: "denyAppointmentRequest",
+    payload: result,
+  };
+}
+
+export async function removeAppointmentRequest(id_patient, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/denyAppointmentRequest",
+      {
+        id_doctor,
+        id_patient,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "removeAppointmentRequest",
+    payload: result,
+  };
+}
+export async function affectDoctorNurse(id_nurse, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/affectDoctorNurse",
+      {
+        id_doctor,
+        id_nurse,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "affectRequest",
+    payload: result,
+  };
+}
+export async function sendAffectRequestDoctorNurse(id_doctor, id_nurse, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/sendAffectRequestDoctorNurse",
+      {
+        id_doctor,
+        id_nurse,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "sendAffectRequest",
+    payload: result,
+  };
+}
+export async function fetchAffectRequestsDoctorNurse(id_doctor, token) {
+  let result = await axios
+    .get(
+      "http://127.0.0.1:8000/api/fetchAffectRequestsDoctorNurse?id_doctor=" +
+        id_doctor,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "fetchAffectRequests",
+    payload: result,
+  };
+}
+export async function acceptAffectRequestDoctorNurse(
+  id_nurse,
+  id_doctor,
+  token
+) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/acceptAffectRequestDoctorNurse",
+      {
+        id_doctor,
+        id_nurse,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "acceptAffectRequest",
+    payload: result,
+  };
+}
+export async function denyAffectRequestDoctorNurse(id_nurse, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://127.0.0.1:8000/api/denyAffectRequestDoctorNurse",
+      {
+        id_doctor,
+        id_nurse,
+        token: token,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "denyAffectRequest",
+    payload: result,
+  };
+}
+export async function blockchainHistory() {
+  let result = await axios
+    .get("http://localhost:3002/api/system/historian")
+    .then((response) => response.data);
+
+  return {
+    type: "blockchainHistory",
+    payload: result,
+  };
+}
+export async function fetchDoctorsBlockchainTransactions() {
+  let result = await axios
+    .get("http://localhost:3002/api/ArrangeAppointment")
+    .then((response) => response.data);
+
+  return {
+    type: "doctorsTx",
+    payload: result,
+  };
+}
+
+export async function fetchDoctorAppointments(idDoctor) {
+  let result = await axios
+    .get("http://localhost:3002/api/AppointmentAsset", {
+      params: {
+        filter:
+          '{"where": {"doctor":"resource:org.acme.ainayati.Doctor#' +
+          idDoctor +
+          '"}}',
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "appointmentList",
+    payload: result,
+  };
+}
+
+export async function fetchPatientAppointments(idPatient) {
+  let result = await axios
+    .get("http://localhost:3002/api/AppointmentAsset", {
+      params: {
+        filter:
+          '{"where": {"patient":"resource:org.acme.ainayati.Patient#' +
+          idPatient +
+          '"}}',
+      },
+    })
+    .then((response) => response.data);
+
+  return {
+    type: "appointmentList",
+    payload: result,
+  };
+}
+export async function fetchNurseAppointments(patients) {
+  let result = [];
+  for (let i = 0; i < patients.length; i++) {
+    let val = await axios
+      .get("http://localhost:3002/api/AppointmentAsset", {
+        params: {
+          filter:
+            '{"where": {"patient":"resource:org.acme.ainayati.Patient#' +
+            patients[i].id +
+            '"}}',
+        },
+      })
+      .then((response) => response.data);
+    result = result.concat(val);
+  }
+  return {
+    type: "appointmentList",
+    payload: result,
+  };
+}
+export async function checkAffectDoctorPatient(id_patient, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://localhost:8000/api/checkAffectDoctorPatient",
+      {
+        id_patient,
+        id_doctor,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+
+  return result;
+}
+
+export async function checkAffectDoctorNurse(id_nurse, id_doctor, token) {
+  let result = await axios
+    .post(
+      "http://localhost:8000/api/checkAffectDoctorNurse",
+      {
+        id_nurse,
+        id_doctor,
+      },
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+
+  return result;
+}
+export async function addAppointment(idDoctor, idPatient, date, details) {
+  let data = {
+    $class: "org.acme.ainayati.ArrangeAppointment",
+    doctor: "resource:org.acme.ainayati.Doctor#" + idDoctor,
+    patient: "resource:org.acme.ainayati.Patient#" + idPatient,
+    state: "false",
+    details: details,
+    date: date,
+  };
+  let result = await axios({
+    method: "post",
+    url: "http://localhost:3002/api/ArrangeAppointment",
+    data: JSON.stringify(data),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  }).then((response) => response);
+  return {
+    type: "addAppointment",
+    payload: result,
+  };
+}
+export async function editAppointment(
+  idApp,
+  idDoctor,
+  idPatient,
+  state,
+  details,
+  date
+) {
+  let data = JSON.stringify({
+    $class: "org.acme.ainayati.AppointmentAsset",
+    doctor: "resource:org.acme.ainayati.Doctor#" + idDoctor,
+    patient: "resource:org.acme.ainayati.Patient#" + idPatient,
+    state: state,
+    details: details,
+    date: date,
+  });
+  let result = await axios.put(
+    "http://localhost:3002/api/AppointmentAsset/" + idApp,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return {
+    type: "editAppointment",
+    payload: result,
+  };
+}
+
+export async function removeAppointment(idApp) {
+  let result = await axios.delete(
+    "http://localhost:3002/api/AppointmentAsset/" + idApp,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return {
+    type: "removeAppointment",
+    payload: result,
+  };
+}
+
+export async function acceptAppointmentRequest(
+  idDoctor,
+  idPatient,
+  date,
+  details
+) {
+  let data = {
+    $class: "org.acme.ainayati.ArrangeAppointment",
+    doctor: "resource:org.acme.ainayati.Doctor#" + idDoctor,
+    patient: "resource:org.acme.ainayati.Patient#" + idPatient,
+    state: "false",
+    details: details,
+    date: date,
+  };
+  let result = await axios({
+    method: "post",
+    url: "http://localhost:3002/api/ArrangeAppointment",
+    data: JSON.stringify(data),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  }).then((response) => response);
+  return {
+    type: "acceptAppointmentRequest",
+    payload: result,
+  };
+}
+export async function getProfileInfo(id, token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getProfileInfo?id=" + id, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return result;
+}
+export async function getProfileInfoUsingEmail(email, token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getProfileInfoUsingEmail?email=" + email, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return result;
+}
+export async function getLast24HoursAdmins(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 2, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "last24HoursAdmins",
+    payload: result,
+  };
+}
+export async function getLast24HoursDoctors(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 3, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "last24HoursDoctors",
+    payload: result,
+  };
+}
+export async function getLast24HoursNurses(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 4, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "last24HoursNurses",
+    payload: result,
+  };
+}
+export async function getLast24HoursPatients(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 5, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "last24HoursPatients",
+    payload: result,
+  };
+}
+export async function arrangeAppointment(idDoctor, idPatient, token) {
+  let result = await axios
+    .post("http://localhost:8000/api/getLast24HoursUsers?type=" + 5, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "patientAppointments",
+    payload: result,
+  };
+}
+export async function getPatientAppointments(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 5, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "patientAppointments",
+    payload: result,
+  };
+}
+export async function getDoctorAppointments(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/getLast24HoursUsers?type=" + 5, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "doctorAppointments",
+    payload: result,
+  };
+}

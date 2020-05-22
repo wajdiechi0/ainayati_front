@@ -266,7 +266,6 @@ function EditUserComponent(props) {
             ""
           )}
           {props.type === "doctor" ||
-          props.type === "nurse" ||
           props.type === "patient" ? (
             <div className={"textfieldCont"}>
               <span className={"formText"}>Gender</span>

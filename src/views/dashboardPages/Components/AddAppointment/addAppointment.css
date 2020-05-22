@@ -1,0 +1,20 @@
+.addAppContainer {
+    width: 500px;
+    height: 500px;
+    padding:20px;
+}
+
+.affectRequestTitle {
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+.formText{
+    text-align: right ;
+    margin-left: auto;
+    font-size: 0.8rem;
+    font-weight: bolder;
+    margin-top: 10px;
+}

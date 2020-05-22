@@ -12,7 +12,10 @@ import {
   fetchAdminList,
   fetchNurseList,
   fetchPatientList,
-  affectDoctorPatient
+  affectDoctorPatient,
+  getProfileInfoUsingEmail,
+  affectDoctorNurse,
+  checkAffectDoctorNurse,
 } from "../../../../redux/actions";
 import FormControl from "@material-ui/core/FormControl";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -23,6 +26,7 @@ import ResultAlert from "../../../authentication/components/alert";
 function AddUserComponent(props) {
   const [name, changeName] = useState("");
   const [email, changeEmail] = useState("");
+  const [doctorEmail, changeDoctorEmail] = useState("");
   const [c_password, changeConfirmation] = useState("");
   const [password, changePassword] = useState("");
   const [birthdate, changeBirthdate] = useState("");
@@ -31,7 +35,9 @@ function AddUserComponent(props) {
   const [specialty, changeSpecialty] = useState("");
   const [weight, changeWeight] = useState("");
   const [height, changeHeight] = useState("");
-  const [gender, changeGender] = useState("");
+  const [gender, changeGender] = useState(
+    props.type === "nurse" ? "female" : ""
+  );
 
   const [open, openAlert] = useState(false);
   const [alertText, changeAlertText] = useState("");
@@ -47,19 +53,42 @@ function AddUserComponent(props) {
       } else if (result.code === "0") {
         switch (props.type) {
           case "admin":
-            props.dispatch(fetchAdminList(JSON.parse(localStorage.getItem("user")).token));
+            props.dispatch(
+              fetchAdminList(JSON.parse(localStorage.getItem("user")).token)
+            );
             break;
           case "doctor":
-            props.dispatch(fetchDoctorList(JSON.parse(localStorage.getItem("user")).token));
+            props.dispatch(
+              fetchDoctorList(JSON.parse(localStorage.getItem("user")).token)
+            );
             break;
           case "nurse":
-            props.dispatch(fetchNurseList(JSON.parse(localStorage.getItem("user")).token));
+            if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
+              props.dispatch(
+                affectDoctorNurse(
+                  result.data.id,
+                  JSON.parse(localStorage.getItem("user")).id,
+                  JSON.parse(localStorage.getItem("user")).token
+                )
+              );
+            }
+            props.dispatch(
+              fetchNurseList(JSON.parse(localStorage.getItem("user")).token)
+            );
             break;
           case "patient":
-            props.dispatch(fetchPatientList(JSON.parse(localStorage.getItem("user")).token));
-            if(JSON.parse(localStorage.getItem("user")).type === "doctor"){
-              props.dispatch(affectDoctorPatient(result.data.id,JSON.parse(localStorage.getItem("user")).id, JSON.parse(localStorage.getItem("user")).token));
+            if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
+              props.dispatch(
+                affectDoctorPatient(
+                  result.data.id,
+                  JSON.parse(localStorage.getItem("user")).id,
+                  JSON.parse(localStorage.getItem("user")).token
+                )
+              );
             }
+            props.dispatch(
+              fetchPatientList(JSON.parse(localStorage.getItem("user")).token)
+            );
             break;
           default:
             break;
@@ -69,6 +98,89 @@ function AddUserComponent(props) {
       props.crudUser.addUserResult = null;
     }
   }, [props.crudUser.addUserResult, props]);
+
+  const addUser = async () => {
+    let profile = {};
+    profile.name = name;
+    profile.email = email;
+    profile.password = password;
+    profile.c_password = c_password;
+    switch (props.type) {
+      case "doctor":
+        profile.birthdate = birthdate;
+        profile.home_address = homeAddress;
+        profile.work_address = workAddress;
+        profile.specialty = specialty;
+        profile.gender = gender;
+        break;
+      case "nurse":
+        profile.birthdate = birthdate;
+        profile.home_address = homeAddress;
+        profile.work_address = workAddress;
+        profile.gender = gender;
+        break;
+      case "patient":
+        profile.weight = weight;
+        profile.height = height;
+        profile.birthdate = birthdate;
+        profile.home_address = homeAddress;
+        profile.gender = gender;
+        break;
+      default:
+        break;
+    }
+    var validator = require("email-validator");
+    if (!validator.validate(email)) {
+      changeAlertText("Please check patient email");
+      changeAlertForm(false);
+      openAlert(true);
+    } else if (!validator.validate(doctorEmail) && props.from === "nurse") {
+      changeAlertText("Please check doctor email");
+      changeAlertForm(false);
+      openAlert(true);
+    } else {
+      if (props.from === "nurse") {
+        let doctor = await getProfileInfoUsingEmail(
+          doctorEmail,
+          JSON.parse(localStorage.getItem("user")).token
+        );
+        if (doctor.code !== "0") {
+          changeAlertText("Doctor email not found");
+          changeAlertForm(false);
+          openAlert(true);
+        } else {
+          let affected = await checkAffectDoctorNurse(
+            JSON.parse(localStorage.getItem("user")).id,
+            doctor.data.id,
+            JSON.parse(localStorage.getItem("user")).token
+          );
+          if (!affected.data) {
+            changeAlertText("You are not affected to that doctor");
+            changeAlertForm(false);
+            openAlert(true);
+          } else {
+            props.dispatch(
+              addNewUser(
+                profile,
+                props.type,
+                doctor.data.id,
+                JSON.parse(localStorage.getItem("user")).token
+              )
+            );
+          }
+        }
+      } else {
+        props.dispatch(
+          addNewUser(
+            profile,
+            props.type,
+            "",
+            JSON.parse(localStorage.getItem("user")).token
+          )
+        );
+      }
+    }
+  };
   return (
     <div>
       <Dialog open={props.open} onClose={props.close}>
@@ -84,9 +196,26 @@ function AddUserComponent(props) {
               backgroundColor: "#9d9d9d",
               width: "100%",
               height: 1,
-              opacity: 0.5
+              opacity: 0.5,
             }}
           />
+          {props.from === "nurse" && (
+            <div className={"textfieldCont"}>
+              <span className={"formText"}>Doctor email</span>
+              <TextField
+                margin="dense"
+                label={"Doctor email"}
+                type={"email"}
+                InputLabelProps={{ style: { fontSize: ".9em" }, shrink: true }}
+                inputProps={{ style: { fontSize: ".9em" } }}
+                style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
+                required={true}
+                onChange={(e) => {
+                  changeDoctorEmail(e.target.value);
+                }}
+              />
+            </div>
+          )}
           <div className={"textfieldCont"}>
             <span className={"formText"}>Name</span>
             <TextField
@@ -96,22 +225,22 @@ function AddUserComponent(props) {
               inputProps={{ style: { fontSize: ".9em" } }}
               style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
               required={true}
-              onChange={e => {
+              onChange={(e) => {
                 changeName(e.target.value);
               }}
             />
           </div>
           <div className={"textfieldCont"}>
-            <span className={"formText"}>Email</span>
+            <span className={"formText"}>Patient email</span>
             <TextField
               margin="dense"
-              label={"Email"}
+              label={"Patient email"}
               type={"email"}
               InputLabelProps={{ style: { fontSize: ".9em" }, shrink: true }}
               inputProps={{ style: { fontSize: ".9em" } }}
               style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
               required={true}
-              onChange={e => {
+              onChange={(e) => {
                 changeEmail(e.target.value);
               }}
             />
@@ -126,7 +255,7 @@ function AddUserComponent(props) {
               inputProps={{ style: { fontSize: ".9em" } }}
               style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
               required={true}
-              onChange={e => {
+              onChange={(e) => {
                 changePassword(e.target.value);
               }}
             />
@@ -141,7 +270,7 @@ function AddUserComponent(props) {
               inputProps={{ style: { fontSize: ".9em" } }}
               style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
               required={true}
-              onChange={e => {
+              onChange={(e) => {
                 changeConfirmation(e.target.value);
               }}
             />
@@ -159,7 +288,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeBirthdate(e.target.value);
                 }}
               />
@@ -179,7 +308,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeHomeaddress(e.target.value);
                 }}
               />
@@ -197,7 +326,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeWorkaddress(e.target.value);
                 }}
               />
@@ -216,7 +345,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeSpecialty(e.target.value);
                 }}
               />
@@ -234,7 +363,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeWeight(e.target.value);
                 }}
               />
@@ -252,7 +381,7 @@ function AddUserComponent(props) {
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}
                 required={true}
-                onChange={e => {
+                onChange={(e) => {
                   changeHeight(e.target.value);
                 }}
               />
@@ -261,9 +390,7 @@ function AddUserComponent(props) {
             ""
           )}
 
-          {props.type === "doctor" ||
-          props.type === "nurse" ||
-          props.type === "patient" ? (
+          {props.type === "doctor" || props.type === "patient" ? (
             <div className={"textfieldCont"}>
               <span className={"formText"}>Gender</span>
               <FormControl
@@ -273,7 +400,7 @@ function AddUserComponent(props) {
                 <InputLabel>Gender</InputLabel>
                 <Select
                   value={gender}
-                  onChange={e => changeGender(e.target.value)}
+                  onChange={(e) => changeGender(e.target.value)}
                 >
                   <MenuItem value={"Male"}>Male</MenuItem>
                   <MenuItem value={"Female"}>Female</MenuItem>
@@ -286,56 +413,12 @@ function AddUserComponent(props) {
 
           <div className={"simpleSet"}>
             <Button
-              onClick={() => {
-                let profile = {};
-                profile.name = name;
-                profile.email = email;
-                profile.password = password;
-                profile.c_password = c_password;
-                switch (props.type) {
-                  case "doctor":
-                    profile.birthdate = birthdate;
-                    profile.home_address = homeAddress;
-                    profile.work_address = workAddress;
-                    profile.specialty = specialty;
-                    profile.gender = gender;
-                    break;
-                  case "nurse":
-                    profile.birthdate = birthdate;
-                    profile.home_address = homeAddress;
-                    profile.work_address = workAddress;
-                    profile.gender = gender;
-                    break;
-                  case "patient":
-                    profile.weight = weight;
-                    profile.height = height;
-                    profile.birthdate = birthdate;
-                    profile.home_address = homeAddress;
-                    profile.gender = gender;
-                    break;
-                  default:
-                    break;
-                }
-                var validator = require("email-validator");
-                if (!validator.validate(email)) {
-                  changeAlertText("Please check your entries !");
-                  changeAlertForm(false);
-                  openAlert(true);
-                } else {
-                  props.dispatch(
-                    addNewUser(
-                      profile,
-                      props.type,
-                      JSON.parse(localStorage.getItem("user")).token
-                    )
-                  );
-                }
-              }}
+              onClick={() => addUser()}
               color={"primary"}
               style={{
                 marginLeft: "auto",
                 marginRight: "50px",
-                marginTop: "10px"
+                marginTop: "10px",
               }}
             >
               Submit
@@ -357,7 +440,7 @@ function AddUserComponent(props) {
 
 function mapStateToProps(state) {
   return {
-    crudUser: state.crudReducer
+    crudUser: state.crudReducer,
   };
 }
 

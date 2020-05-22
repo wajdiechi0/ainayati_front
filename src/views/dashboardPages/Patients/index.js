@@ -4,7 +4,7 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Button from "@material-ui/core/Button";
+import Button from "../../../dashboard/components/CustomButtons/Button.js";
 import { IconButton } from "@material-ui/core";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -14,21 +14,26 @@ import { connect } from "react-redux";
 import {
   fetchPatientList,
   removeUser,
-  removeAffect,
+  removeAffectDoctorPatient,
+  getProfileInfo,
 } from "./../../../redux/actions";
 import AddPatient from "../Components/AddUser";
 import AffectRequests from "../Components/doctorAffectRequests";
 import EditPatient from "../Components/EditUser";
+import AddAppointment from "../Components/AddAppointment";
 class Patients extends Component {
   constructor(props) {
     super(props);
     this.state = {
       patients: [],
       idEdit: "",
+      addAppointmentOpen: false,
+      disabled: false,
       editPatient: {},
       addPatientOpen: false,
       editPatientOpen: false,
       affectRequestsOpen: false,
+      addAppointmentPatient: {},
     };
   }
 
@@ -45,7 +50,7 @@ class Patients extends Component {
     this.reloadUserList(filtered);
     if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
       this.props.dispatch(
-        removeAffect(
+        removeAffectDoctorPatient(
           JSON.parse(localStorage.getItem("user")).id,
           userId,
           JSON.parse(localStorage.getItem("user")).token
@@ -64,7 +69,7 @@ class Patients extends Component {
         <Typography variant="h4" style={style}>
           Patient List
         </Typography>
-        <div style={{display: "flex"}}>
+        <div style={{ display: "flex", marginTop: 30 }}>
           <Button
             variant="contained"
             color="primary"
@@ -75,31 +80,60 @@ class Patients extends Component {
           >
             Add a patient
           </Button>
-          <Button
-            onClick={() => {
-              this.setState({ affectRequestsOpen: true });
-            }}
-            style={{ marginLeft: "auto", background: "#00acc1", color: "#fff" }}
-            color={"primary"}
-          >
-            Affect Requests
-          </Button>
+          {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+            <Button
+              onClick={() => {
+                this.setState({ affectRequestsOpen: true });
+              }}
+              style={{
+                marginLeft: "auto",
+                background: "#00acc1",
+                color: "#fff",
+              }}
+              color={"primary"}
+            >
+              Affect Requests
+            </Button>
+          )}
         </div>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="right">Name</TableCell>
-              <TableCell align="right">email</TableCell>
-              <TableCell align="right">Birthdate</TableCell>
-              <TableCell align="right">Home Address</TableCell>
-              <TableCell align="right">Weight(KG)</TableCell>
-              <TableCell align="right">Height(M)</TableCell>
-              <TableCell align="right">Gender</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Patient name
+              </TableCell>
+              {JSON.parse(localStorage.getItem("user")).type === "nurse" && (
+                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  Doctor name
+                </TableCell>
+              )}
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Email
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Birthdate
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Home Address
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Weight(KG)
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Height(M)
+              </TableCell>
+              <TableCell align="right" style={{ fontWeight: "bold" }}>
+                Gender
+              </TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
                 <TableCell align="right" />
               )}
               <TableCell align="right" />
+
+              {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+                <TableCell align="right" />
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,6 +143,9 @@ class Patients extends Component {
                   {row.id}
                 </TableCell>
                 <TableCell align="right">{row.name}</TableCell>
+                {JSON.parse(localStorage.getItem("user")).type === "nurse" && (
+                  <TableCell align="right">{row.doctor}</TableCell>
+                )}
                 <TableCell align="right">{row.email}</TableCell>
                 <TableCell align="right">{row.birthdate}</TableCell>
                 <TableCell align="right">{row.home_address}</TableCell>
@@ -129,6 +166,23 @@ class Patients extends Component {
                     </IconButton>
                   </TableCell>
                 )}
+
+                {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => {
+                        this.setState({
+                          addAppointmentPatient: row,
+                          addAppointmentOpen: true,
+                        });
+                      }}
+                      color={"info"}
+                      disabled={this.state.disabled}
+                    >
+                      Add an appointment
+                    </Button>
+                  </TableCell>
+                )}
                 <TableCell align="right">
                   <IconButton onClick={() => this.deleteUser(row.id)}>
                     <DeleteIcon style={{ color: "red" }} />
@@ -141,6 +195,7 @@ class Patients extends Component {
         <AddPatient
           open={this.state.addPatientOpen}
           type="patient"
+          from={JSON.parse(localStorage.getItem("user")).type}
           close={() => {
             this.setState({ addPatientOpen: false });
           }}
@@ -155,8 +210,16 @@ class Patients extends Component {
         />
         <AffectRequests
           open={this.state.affectRequestsOpen}
+          type="patient"
           close={() => {
             this.setState({ affectRequestsOpen: false });
+          }}
+        />
+        <AddAppointment
+          open={this.state.addAppointmentOpen}
+          addAppointmentPatient={this.state.addAppointmentPatient}
+          close={() => {
+            this.setState({ addAppointmentOpen: false });
           }}
         />
       </div>
@@ -164,16 +227,32 @@ class Patients extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.crudUser.patientList && prevProps !== this.props) {
-      if (this.props.crudUser.patientList.code === "0") {
-        this.setState({
-          patients: this.props.crudUser.patientList.data,
-        });
+    const fetchList = async () => {
+      let result = this.props.crudUser.patientList;
+      if (result && prevProps !== this.props) {
+        if (result.code === "0") {
+          for (
+            let i = 0;
+            i < result.data.length;
+            i++
+          ) {
+            let doctor = await getProfileInfo(
+              result.data[i].id_doctor,
+              JSON.parse(localStorage.getItem("user")).token
+            );
+            result.data[i].doctor = doctor.data.name;
+          }
+          this.setState({
+            patients: result.data,
+          });
+        }
+        this.props.crudUser.patientList = null;
       }
-      this.props.crudUser.patientList = null;
-    }
+    };
+    fetchList();
   }
   componentDidMount() {
+    document.title = "Patients";
     this.props.dispatch(
       fetchPatientList(JSON.parse(localStorage.getItem("user")).token)
     );
