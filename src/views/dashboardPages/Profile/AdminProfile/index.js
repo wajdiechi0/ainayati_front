@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, easing } from "@material-ui/core/styles";
 import GridItem from "../../../../dashboard/components/Grid/GridItem.js";
 import GridContainer from "../../../../dashboard/components/Grid/GridContainer.js";
 import CustomInput from "../../../../dashboard/components/CustomInput/CustomInput.js";
@@ -40,9 +40,9 @@ function Profile(props) {
   
   const classes = useStyles();
   const [open, openAlert] = useState(false);
-  const [email, changeEmail] = useState("");
-  const [name, changeName] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [email, changeEmail] = useState(user.email);
+  const [name, changeName] = useState(user.name);
   const [updateProfileAlert, openUpdateProfileAlert] = useState(false);
   const [alertText, changeAlertText] = useState("");
   const [success, changeAlertForm] = useState(true);
@@ -71,6 +71,9 @@ function Profile(props) {
     let result = props.updateProfile.updateProfileResult;
     if(result){
       if(result.code==='0'){
+        user.email = email;
+        user.name = name;
+        localStorage.setItem("user",JSON.stringify(user));
         changeAlertText("Your profile has been successfully updated");
         changeAlertForm(true);
         openUpdateProfileAlert(true)
@@ -79,6 +82,7 @@ function Profile(props) {
         changeAlertForm(false);
         openUpdateProfileAlert(true)
       }
+      props.updateProfile.updateProfileResult = null;
     }
   }, [props.updateProfile]);
   return (

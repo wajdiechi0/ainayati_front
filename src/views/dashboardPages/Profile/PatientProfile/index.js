@@ -35,20 +35,22 @@ const styles = {
     textDecoration: "none",
   },
 };
+import Checkup from "../../Components/Checkup";
 
 const useStyles = makeStyles(styles);
 
 function Profile(props) {
   const classes = useStyles();
-  const [open, openAlert] = useState(false);
-  const [name, changeName] = useState("");
-  const [email, changeEmail] = useState("");
-  const [birthdate, changeBirthdate] = useState("");
-  const [homeAddress, changeHomeAddress] = useState("");
-  const [weight, changeWeight] = useState("");
-  const [height, changeHeight] = useState("");
-  const [aboutMe, changeAboutMe] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [checkupOpen, openCheckup] = useState(false);
+  const [open, openAlert] = useState(false);
+  const [name, changeName] = useState(user.name);
+  const [email, changeEmail] = useState(user.email);
+  const [birthdate, changeBirthdate] = useState(user.birthdate);
+  const [homeAddress, changeHomeAddress] = useState(user.home_address);
+  const [weight, changeWeight] = useState(user.weight);
+  const [height, changeHeight] = useState(user.height);
+  const [aboutMe, changeAboutMe] = useState(user.description);
   const [updateProfileAlert, openUpdateProfileAlert] = useState(false);
   const [alertText, changeAlertText] = useState("");
   const [success, changeAlertForm] = useState(true);
@@ -83,6 +85,14 @@ function Profile(props) {
     let result = props.updateProfile.updateProfileResult;
     if (result) {
       if (result.code === "0") {
+        user.email = email;
+        user.name = name;
+        user.birthdate = birthdate;
+        user.home_address = homeAddress;
+        user.weight = weight;
+        user.height = height;
+        user.description = aboutMe;
+        localStorage.setItem("user", JSON.stringify(user));
         changeAlertText("Your profile has been successfully updated");
         changeAlertForm(true);
         openUpdateProfileAlert(true);
@@ -91,6 +101,7 @@ function Profile(props) {
         changeAlertForm(false);
         openUpdateProfileAlert(true);
       }
+      props.updateProfile.updateProfileResult = null;
     }
   }, [props.updateProfile]);
   return (
@@ -222,10 +233,25 @@ function Profile(props) {
               >
                 Change password
               </Button>
+              <Button
+                onClick={() => {
+                  openCheckup(true);
+                }}
+                color={"info"}
+              >
+                Checkup
+              </Button>
             </CardBody>
           </Card>
         </GridItem>
       </GridContainer>
+      <Checkup
+        open={checkupOpen}
+        checkupPatient={user}
+        close={() => {
+          openCheckup(false);
+        }}
+      />
       <ChangePasswordAlert
         open={open}
         close={() => {

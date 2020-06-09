@@ -2,6 +2,9 @@ export default function (state={},action) {
     switch (action.type) {
         case 'adminList': return {...state,adminList:action.payload}
         case 'doctorList': return {...state,doctorList:action.payload}
+        case 'doctorRegistrationsPerMonth': return {...state,doctorRegistrationsPerMonth:action.payload}
+        case 'nurseRegistrationsPerMonth': return {...state,nurseRegistrationsPerMonth:action.payload}
+        case 'patientRegistrationsPerMonth': return {...state,patientRegistrationsPerMonth:action.payload}
         case 'last24HoursAdmins': return {...state,last24HoursAdmins:action.payload}
         case 'last24HoursDoctors': return {...state,last24HoursDoctors:action.payload}
         case 'last24HoursPatients': return {...state,last24HoursPatients:action.payload}

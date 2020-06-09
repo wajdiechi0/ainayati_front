@@ -41,14 +41,14 @@ const useStyles = makeStyles(styles);
 function Profile(props) {
   const classes = useStyles();
   const [open, openAlert] = useState(false);
-  const [name, changeName] = useState("");
-  const [email, changeEmail] = useState("");
-  const [birthdate, changeBirthdate] = useState("");
-  const [specialty, changeSpecialty] = useState("");
-  const [workAddress, changeWorkAddress] = useState("");
-  const [homeAddress, changeHomeAddress] = useState("");
-  const [aboutMe, changeAboutMe] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
+  const [name, changeName] = useState(user.name);
+  const [email, changeEmail] = useState(user.email);
+  const [birthdate, changeBirthdate] = useState(user.birthdate);
+  const [specialty, changeSpecialty] = useState(user.specialty);
+  const [workAddress, changeWorkAddress] = useState(user.work_address);
+  const [homeAddress, changeHomeAddress] = useState(user.home_address);
+  const [aboutMe, changeAboutMe] = useState(user.description);
   const [updateProfileAlert, openUpdateProfileAlert] = useState(false);
   const [alertText, changeAlertText] = useState("");
   const [success, changeAlertForm] = useState(true);
@@ -83,6 +83,14 @@ function Profile(props) {
     let result = props.updateProfile.updateProfileResult;
     if (result) {
       if (result.code === "0") {
+        user.email = email;
+        user.name = name;
+        user.birthdate = birthdate;
+        user.home_address = homeAddress;
+        user.work_address = workAddress;
+        user.description = aboutMe;
+        user.specialty = specialty;
+        localStorage.setItem("user",JSON.stringify(user));
         changeAlertText("Your profile has been successfully updated");
         changeAlertForm(true);
         openUpdateProfileAlert(true);
@@ -91,6 +99,7 @@ function Profile(props) {
         changeAlertForm(false);
         openUpdateProfileAlert(true);
       }
+      props.updateProfile.updateProfileResult = null;
     }
   }, [props.updateProfile]);
   return (

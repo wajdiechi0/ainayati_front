@@ -736,7 +736,6 @@ export async function denyAppointmentRequest(id_patient, id_doctor, token) {
       }
     )
     .then((response) => response.data);
-  console.log(result);
   return {
     type: "denyAppointmentRequest",
     payload: result,
@@ -937,9 +936,11 @@ export async function fetchNurseAppointments(patients) {
       .get("http://localhost:3002/api/AppointmentAsset", {
         params: {
           filter:
-            '{"where": {"patient":"resource:org.acme.ainayati.Patient#' +
+            '{"where": {"and":[{"patient":"resource:org.acme.ainayati.Patient#' +
             patients[i].id +
-            '"}}',
+            '"},{"doctor":"resource:org.acme.ainayati.Doctor#' +
+            patients[i].id_doctor +
+            '"}]}}',
         },
       })
       .then((response) => response.data);
@@ -988,6 +989,85 @@ export async function checkAffectDoctorNurse(id_nurse, id_doctor, token) {
     .then((response) => response.data);
 
   return result;
+}
+
+export async function fetchPatientActivities(patient_email, token) {
+  let result = await axios
+    .get(
+      "http://localhost:8000/api/fetchPatientActivities?email=" + patient_email,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+  return {
+    type: "activities",
+    payload: result,
+  };
+}
+export async function doctorRegistrationsPerMonth(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/registrationsPerMonth?type=" + 3, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "doctorRegistrationsPerMonth",
+    payload: result,
+  };
+}
+export async function nurseRegistrationsPerMonth(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/registrationsPerMonth?type=" + 4, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "nurseRegistrationsPerMonth",
+    payload: result,
+  };
+}
+export async function patientRegistrationsPerMonth(token) {
+  let result = await axios
+    .get("http://localhost:8000/api/registrationsPerMonth?type=" + 5, {
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/json",
+      },
+    })
+    .then((response) => response.data);
+  return {
+    type: "patientRegistrationsPerMonth",
+    payload: result,
+  };
+}
+
+export async function fetchPatientHeartRates(patient_email, token) {
+  let result = await axios
+    .get(
+      "http://localhost:8000/api/fetchPatientHeartRates?email=" + patient_email,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json",
+        },
+      }
+    )
+    .then((response) => response.data);
+
+  return {
+    type: "heartRates",
+    payload: result,
+  };
 }
 export async function addAppointment(idDoctor, idPatient, date, details) {
   let data = {

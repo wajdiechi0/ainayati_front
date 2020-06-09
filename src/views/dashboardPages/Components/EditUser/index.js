@@ -42,6 +42,7 @@ function EditUserComponent(props) {
       if (result.code !== "0") {
         changeAlertForm(false);
       } else if (result.code === "0") {
+        props.close();
         switch (props.type) {
           case "admin":
             props.dispatch(

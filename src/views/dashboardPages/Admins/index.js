@@ -133,6 +133,7 @@ class Admins extends Component {
     }
   }
   componentDidMount() {
+    document.title = "Admins";
     this.props.dispatch(
       fetchAdminList(JSON.parse(localStorage.getItem("user")).token)
     );

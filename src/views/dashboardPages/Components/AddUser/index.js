@@ -51,6 +51,7 @@ function AddUserComponent(props) {
       if (result.code !== "0") {
         changeAlertForm(false);
       } else if (result.code === "0") {
+        props.close();
         switch (props.type) {
           case "admin":
             props.dispatch(
@@ -131,7 +132,7 @@ function AddUserComponent(props) {
     }
     var validator = require("email-validator");
     if (!validator.validate(email)) {
-      changeAlertText("Please check patient email");
+      changeAlertText("Please check the email");
       changeAlertForm(false);
       openAlert(true);
     } else if (!validator.validate(doctorEmail) && props.from === "nurse") {
@@ -231,10 +232,10 @@ function AddUserComponent(props) {
             />
           </div>
           <div className={"textfieldCont"}>
-            <span className={"formText"}>Patient email</span>
+            <span className={"formText"}>Email</span>
             <TextField
               margin="dense"
-              label={"Patient email"}
+              label={"Email"}
               type={"email"}
               InputLabelProps={{ style: { fontSize: ".9em" }, shrink: true }}
               inputProps={{ style: { fontSize: ".9em" } }}

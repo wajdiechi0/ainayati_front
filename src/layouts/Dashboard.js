@@ -38,7 +38,7 @@ export default function Admin({ ...rest }) {
           key={key}
         />
       ))}
-      <Redirect from="/" to={"/dashboard" + routes[0].path} />
+      <Redirect from="/" to={routes[0].layout + routes[0].path} />
     </Switch>
   );
   return (

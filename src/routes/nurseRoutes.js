@@ -11,13 +11,7 @@ import Patients from "@material-ui/icons/Favorite";
 import Appointment from "@material-ui/icons/EventNote";
 
 const dashboardRoutes = [
-  {
-    path: "",
-    name: "Dashboard",
-    icon: Dashboard,
-    component: DashboardPage,
-    layout: "/dashboard"
-  },
+
   {
     path: "/",
     name: "Profile",

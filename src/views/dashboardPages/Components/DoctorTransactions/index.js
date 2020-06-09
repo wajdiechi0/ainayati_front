@@ -125,7 +125,7 @@ function AffectRequestComponent(props) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Transaction Id</TableCell>
+                <TableCell style={{ fontWeight: "bold" }}>Transaction Id</TableCell>
                 <TableCell align="right" style={{ fontWeight: "bold" }}>
                   Transaction type
                 </TableCell>

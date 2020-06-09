@@ -9,6 +9,7 @@ import { IconButton } from "@material-ui/core";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
+import { Pagination } from "@material-ui/lab";
 
 import { connect } from "react-redux";
 import {
@@ -21,33 +22,41 @@ import AddPatient from "../Components/AddUser";
 import AffectRequests from "../Components/doctorAffectRequests";
 import EditPatient from "../Components/EditUser";
 import AddAppointment from "../Components/AddAppointment";
+import Checkup from "../Components/Checkup";
 class Patients extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      patients: [],
+      patientList: [],
+      selectedPatientList: [],
       idEdit: "",
       addAppointmentOpen: false,
       disabled: false,
+      pageNumber: 1,
       editPatient: {},
       addPatientOpen: false,
       editPatientOpen: false,
       affectRequestsOpen: false,
       addAppointmentPatient: {},
+      checkupPatient: {},
+      checkupOpen: false,
+      range: 5,
     };
   }
 
-  reloadUserList(filtered) {
+  deleteUser(userId) {
+    var filtered = this.state.selectedPatients.filter((value) => {
+      return value.id !== userId;
+    });
+    this.setState({
+      selectedPatients: filtered,
+    });
+    filtered = this.state.patients.filter((value) => {
+      return value.id !== userId;
+    });
     this.setState({
       patients: filtered,
     });
-  }
-
-  deleteUser(userId) {
-    var filtered = this.state.patients.filter((value) => {
-      return value.id !== userId;
-    });
-    this.reloadUserList(filtered);
     if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
       this.props.dispatch(
         removeAffectDoctorPatient(
@@ -63,6 +72,16 @@ class Patients extends Component {
     }
   }
 
+  handlePageChange = (pageNumber) => {
+    this.setState({
+      pageNumber,
+      selectedPatientList: this.state.patientList.slice(
+        (pageNumber - 1) * this.state.range,
+        this.state.range * pageNumber
+      ),
+    });
+    console.log(this.state.selectedPatientList);
+  };
   render() {
     return (
       <div>
@@ -103,7 +122,10 @@ class Patients extends Component {
               <TableCell align="right" style={{ fontWeight: "bold" }}>
                 Patient name
               </TableCell>
-              {JSON.parse(localStorage.getItem("user")).type === "nurse" && (
+              {(JSON.parse(localStorage.getItem("user")).type === "nurse" ||
+                JSON.parse(localStorage.getItem("user")).type ===
+                  "super admin" ||
+                JSON.parse(localStorage.getItem("user")).type === "admin") && (
                 <TableCell align="right" style={{ fontWeight: "bold" }}>
                   Doctor name
                 </TableCell>
@@ -130,20 +152,24 @@ class Patients extends Component {
                 <TableCell align="right" />
               )}
               <TableCell align="right" />
-
+              <TableCell align="right" />
               {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
                 <TableCell align="right" />
               )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {this.state.patients.map((row) => (
-              <TableRow key={row.id}>
+            {this.state.selectedPatientList.map((row) => (
+              <TableRow key={row.id.toString()+row.id_doctor.toString()}>
                 <TableCell component="th" scope="row">
                   {row.id}
                 </TableCell>
                 <TableCell align="right">{row.name}</TableCell>
-                {JSON.parse(localStorage.getItem("user")).type === "nurse" && (
+                {(JSON.parse(localStorage.getItem("user")).type === "nurse" ||
+                  JSON.parse(localStorage.getItem("user")).type ===
+                    "super admin" ||
+                  JSON.parse(localStorage.getItem("user")).type ===
+                    "admin") && (
                   <TableCell align="right">{row.doctor}</TableCell>
                 )}
                 <TableCell align="right">{row.email}</TableCell>
@@ -176,13 +202,27 @@ class Patients extends Component {
                           addAppointmentOpen: true,
                         });
                       }}
-                      color={"info"}
+                      color={"primary"}
                       disabled={this.state.disabled}
                     >
                       Add an appointment
                     </Button>
                   </TableCell>
                 )}
+                <TableCell align="right">
+                  <Button
+                    onClick={() => {
+                      this.setState({
+                        checkupPatient: row,
+                        checkupOpen: true,
+                      });
+                    }}
+                    color={"info"}
+                    disabled={this.state.disabled}
+                  >
+                    Checkup
+                  </Button>
+                </TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => this.deleteUser(row.id)}>
                     <DeleteIcon style={{ color: "red" }} />
@@ -222,6 +262,25 @@ class Patients extends Component {
             this.setState({ addAppointmentOpen: false });
           }}
         />
+        <Checkup
+          open={this.state.checkupOpen}
+          checkupPatient={this.state.checkupPatient}
+          close={() => {
+            this.setState({ checkupOpen: false });
+          }}
+        />
+
+        <Pagination
+          page={this.state.pageNumber}
+          count={
+            this.state.patientList.length <= this.state.range
+              ? 1
+              : Math.ceil(this.state.patientList.length / this.state.range)
+          }
+          color="primary"
+          style={{ position: "absolute", bottom: 10, left: 5 }}
+          onChange={(e, p) => this.handlePageChange(p)}
+        />
       </div>
     );
   }
@@ -231,19 +290,18 @@ class Patients extends Component {
       let result = this.props.crudUser.patientList;
       if (result && prevProps !== this.props) {
         if (result.code === "0") {
-          for (
-            let i = 0;
-            i < result.data.length;
-            i++
-          ) {
-            let doctor = await getProfileInfo(
-              result.data[i].id_doctor,
-              JSON.parse(localStorage.getItem("user")).token
-            );
-            result.data[i].doctor = doctor.data.name;
+          for (let i = 0; i < result.data.length; i++) {
+            if (JSON.parse(localStorage.getItem("user")).type !== "doctor") {
+              let doctor = await getProfileInfo(
+                result.data[i].id_doctor,
+                JSON.parse(localStorage.getItem("user")).token
+              );
+              result.data[i].doctor = doctor.data.name;
+            }
           }
           this.setState({
-            patients: result.data,
+            patientList: result.data,
+            selectedPatientList: result.data.slice(0, this.state.range),
           });
         }
         this.props.crudUser.patientList = null;

@@ -58,7 +58,9 @@ function AffectRequestComponent(props) {
     changeDisabled(true);
     props.dispatch(
       acceptAppointmentRequest(
-        JSON.parse(localStorage.getItem("user")).id,
+        JSON.parse(localStorage.getItem("user")).type === "doctor"
+          ? JSON.parse(localStorage.getItem("user")).id
+          : props.appointment.doctor.id,
         props.appointment.id,
         appDate,
         " "
