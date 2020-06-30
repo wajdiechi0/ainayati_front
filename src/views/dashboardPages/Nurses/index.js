@@ -9,9 +9,14 @@ import { IconButton } from "@material-ui/core";
 import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
+import DeleteConfirmation from "./../../authentication/components/DeleteConfirmation";
 
 import { connect } from "react-redux";
-import { fetchNurseList, removeUser ,removeAffectDoctorNurse} from "./../../../redux/actions";
+import {
+  fetchNurseList,
+  removeUser,
+  removeAffectDoctorNurse,
+} from "./../../../redux/actions";
 import AddNurse from "./../Components/AddUser";
 import AffectRequests from "../Components/doctorAffectRequests";
 import EditNurse from "./../Components/EditUser";
@@ -25,6 +30,8 @@ class Nurses extends Component {
       addNurseOpen: false,
       editNurseOpen: false,
       affectRequestsOpen: false,
+      rowId: 0,
+      deleteConfirmationOpen: false,
     };
   }
 
@@ -92,42 +99,38 @@ class Nurses extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Name
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 email
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Birthdate
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Home Address
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Work Address
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Gender
               </TableCell>
-              <TableCell align="right" />
-              <TableCell align="right" />
+              <TableCell  />
+              <TableCell  />
             </TableRow>
           </TableHead>
           <TableBody>
             {this.state.nurses.map((row) => (
               <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.birthdate}</TableCell>
-                <TableCell align="right">{row.home_address}</TableCell>
-                <TableCell align="right">{row.work_address}</TableCell>
-                <TableCell align="right">{row.gender}</TableCell>
-                <TableCell align="right">
+                <TableCell >{row.name}</TableCell>
+                <TableCell >{row.email}</TableCell>
+                <TableCell >{row.birthdate}</TableCell>
+                <TableCell >{row.home_address}</TableCell>
+                <TableCell >{row.work_address}</TableCell>
+                <TableCell >{row.gender}</TableCell>
+                <TableCell >
                   <IconButton
                     onClick={() => {
                       this.setState({
@@ -140,8 +143,15 @@ class Nurses extends Component {
                     <CreateIcon style={{ color: "#0033cc" }} />
                   </IconButton>
                 </TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => this.deleteUser(row.id)}>
+                <TableCell >
+                  <IconButton
+                    onClick={() => {
+                      this.setState({
+                        rowId: row.id,
+                        deleteConfirmationOpen: true,
+                      });
+                    }}
+                  >
                     <DeleteIcon style={{ color: "red" }} />
                   </IconButton>
                 </TableCell>
@@ -169,6 +179,16 @@ class Nurses extends Component {
           type="nurse"
           close={() => {
             this.setState({ affectRequestsOpen: false });
+          }}
+        />
+
+        <DeleteConfirmation
+          open={this.state.deleteConfirmationOpen}
+          close={() => {
+            this.setState({ deleteConfirmationOpen: false });
+          }}
+          function={() => {
+            this.deleteUser(this.state.rowId);
           }}
         />
       </div>

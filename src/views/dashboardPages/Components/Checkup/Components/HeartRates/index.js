@@ -50,11 +50,10 @@ function ActivityComponent(props) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Heart rate(B/m)
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Date
                 </TableCell>
               </TableRow>
@@ -62,11 +61,9 @@ function ActivityComponent(props) {
             <TableBody>
               {selectedList.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell align="right">{row.heart_rate}</TableCell>
-                  <TableCell align="right">{row.date_time}</TableCell>
+
+                  <TableCell >{row.heart_rate}</TableCell>
+                  <TableCell >{row.date_time}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

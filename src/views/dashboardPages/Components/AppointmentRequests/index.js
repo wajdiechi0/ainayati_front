@@ -25,7 +25,7 @@ function AppointmentRequestComponent(props) {
   const [ChooseDateAlertOpen, openDateAlert] = useState(false);
   const [alertText, changeAlertText] = useState("");
   const [success, changeAlertForm] = useState(true);
-  const [appointment, changeAppointment] = useState({});
+  const [appointment, ] = useState({});
 
   useEffect(() => {
     props.dispatch(
@@ -132,7 +132,7 @@ function AppointmentRequestComponent(props) {
                     <TableCell align="right">
                       <Button
                         onClick={() => {
-                          changeAppointment(row);
+                          (row);
                           openDateAlert(true);
                         }}
                         color={"info"}

@@ -12,12 +12,16 @@ import ShowIcon from "@material-ui/icons/Visibility";
 import Typography from "@material-ui/core/Typography";
 import AppointmentDone from "@material-ui/icons/EventAvailable";
 import AppointmentNotDone from "@material-ui/icons/History";
+import Tooltip from "@material-ui/core/Tooltip";
+
 import { Pagination } from "@material-ui/lab";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import AddAppointment from "../Components/AddAppointment";
 import AppointmentRequests from "../Components/AppointmentRequests";
 import ResultAlert from "../../authentication/components/alert";
 import EditAppointment from "../Components/EditAppointment";
+import DeleteConfirmation from "./../../authentication/components/DeleteConfirmation";
+
 import { connect } from "react-redux";
 import {
   fetchDoctorAppointments,
@@ -48,6 +52,8 @@ class Appointments extends Component {
       pageNumber: 1,
       patients: [],
       fetch: false,
+      rowId: 0,
+      deleteConfirmationOpen: false,
     };
   }
 
@@ -112,23 +118,18 @@ class Appointments extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                  Doctor
+                <TableCell style={{ fontWeight: "bold" }}>
+                  Doctor name
                 </TableCell>
               )}
               {JSON.parse(localStorage.getItem("user")).type !== "patient" && (
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
-                  Patient
+                <TableCell style={{ fontWeight: "bold" }}>
+                  Patient name
                 </TableCell>
               )}
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                State
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Date
-              </TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>State</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Date</TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "patient" && (
                 <TableCell />
               )}
@@ -138,25 +139,24 @@ class Appointments extends Component {
           <TableBody>
             {this.state.selectedAppointmentListFinal.map((row) => (
               <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
                 {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
-                  <TableCell align="right">{row.doctorUser.name}</TableCell>
+                  <TableCell>{row.doctorUser.name}</TableCell>
                 )}
                 {JSON.parse(localStorage.getItem("user")).type !==
-                  "patient" && (
-                  <TableCell align="right">{row.patientUser.name}</TableCell>
-                )}
-                <TableCell align="right">
+                  "patient" && <TableCell>{row.patientUser.name}</TableCell>}
+                <TableCell>
                   {row.state === "false" ? (
-                    <AppointmentNotDone />
+                    <Tooltip title="Not done">
+                      <AppointmentNotDone />
+                    </Tooltip>
                   ) : (
-                    <AppointmentDone style={{ color: "green" }} />
+                    <Tooltip title="Done">
+                      <AppointmentDone style={{ color: "green" }} />
+                    </Tooltip>
                   )}
                 </TableCell>
-                <TableCell align="right">{row.date}</TableCell>
-                <TableCell align="right">
+                <TableCell>{row.date}</TableCell>
+                <TableCell>
                   <IconButton
                     onClick={() => {
                       this.setState({
@@ -175,7 +175,7 @@ class Appointments extends Component {
                 </TableCell>
                 {JSON.parse(localStorage.getItem("user")).type !==
                   "patient" && (
-                  <TableCell align="right">
+                  <TableCell>
                     {this.state.deletingLoading[row.id] ? (
                       <CircularProgress
                         style={{ width: 25, height: 25 }}
@@ -186,8 +186,9 @@ class Appointments extends Component {
                         onClick={() => {
                           this.setState({
                             appointment: row,
+                            rowId: row.id,
+                            deleteConfirmationOpen: true,
                           });
-                          this.deleteAppointment(row.id);
                         }}
                       >
                         <DeleteIcon style={{ color: "red" }} />
@@ -213,6 +214,15 @@ class Appointments extends Component {
             color="secondary"
           />
         </div>
+        <DeleteConfirmation
+          open={this.state.deleteConfirmationOpen}
+          close={() => {
+            this.setState({ deleteConfirmationOpen: false });
+          }}
+          function={() => {
+            this.deleteAppointment(this.state.rowId);
+          }}
+        />
         <Pagination
           count={Math.ceil(
             this.state.appointmentList.length / this.state.range

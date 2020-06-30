@@ -44,16 +44,7 @@ function App() {
             )
           }
         />
-        <Route
-          path="/password/reset/:token"
-          render={() =>
-            !JSON.parse(localStorage.getItem("user")) ? (
-              <ResetLink />
-            ) : (
-              <Redirect to="/" />
-            )
-          }
-        />
+        <Route path="/password/reset/:token" component={ResetLink} />
         <Route
           path="/dashboard"
           render={() =>
@@ -64,6 +55,7 @@ function App() {
             )
           }
         />
+        <Redirect from="/" to={"/login"} />
       </Switch>
     </Router>
   );

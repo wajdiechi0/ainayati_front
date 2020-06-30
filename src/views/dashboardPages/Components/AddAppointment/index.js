@@ -229,7 +229,7 @@ class AddAppointmentComponent extends React.Component {
               </span>
               <TextField
                 margin="dense"
-                label={"Patient email"}
+                label={"Email"}
                 InputLabelProps={{ style: { fontSize: ".9em" }, shrink: true }}
                 inputProps={{ style: { fontSize: ".9em" } }}
                 style={{ marginRight: 50, marginLeft: "30px", width: "60%" }}

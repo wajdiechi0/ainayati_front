@@ -118,7 +118,7 @@ function AffectRequestComponent(props) {
                 marginTop: "20px",
               }}
             >
-              Search by doctor
+              Search by doctor name
             </Button>
           </div>
 
@@ -126,16 +126,16 @@ function AffectRequestComponent(props) {
             <TableHead>
               <TableRow>
                 <TableCell style={{ fontWeight: "bold" }}>Transaction Id</TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Transaction type
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Appointment doctor
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Appointment patient
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Transaction date
                 </TableCell>
               </TableRow>
@@ -146,12 +146,12 @@ function AffectRequestComponent(props) {
                   <TableCell component="th" scope="row">
                     {row.transactionId}
                   </TableCell>
-                  <TableCell align="right">Arrange Appointment</TableCell>
-                  <TableCell align="right">{row.doctor}</TableCell>
-                  <TableCell align="right">
+                  <TableCell >Arrange Appointment</TableCell>
+                  <TableCell >{row.doctor}</TableCell>
+                  <TableCell >
                     {row.patient}
                   </TableCell>
-                  <TableCell align="right">{row.timestamp}</TableCell>
+                  <TableCell >{row.timestamp}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

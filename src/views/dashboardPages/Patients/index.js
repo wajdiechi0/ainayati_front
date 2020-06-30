@@ -10,6 +10,7 @@ import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
 import { Pagination } from "@material-ui/lab";
+import DeleteConfirmation from "./../../authentication/components/DeleteConfirmation";
 
 import { connect } from "react-redux";
 import {
@@ -23,6 +24,7 @@ import AffectRequests from "../Components/doctorAffectRequests";
 import EditPatient from "../Components/EditUser";
 import AddAppointment from "../Components/AddAppointment";
 import Checkup from "../Components/Checkup";
+import PatientAppointments from "../Components/PatientAppointments";
 class Patients extends Component {
   constructor(props) {
     super(props);
@@ -34,6 +36,7 @@ class Patients extends Component {
       disabled: false,
       pageNumber: 1,
       editPatient: {},
+      patient: null,
       addPatientOpen: false,
       editPatientOpen: false,
       affectRequestsOpen: false,
@@ -41,21 +44,25 @@ class Patients extends Component {
       checkupPatient: {},
       checkupOpen: false,
       range: 5,
+      rowId: 0,
+      deleteConfirmationOpen: false,
+      patientAppointmentsOpen: false,
     };
   }
 
   deleteUser(userId) {
-    var filtered = this.state.selectedPatients.filter((value) => {
+    var filtered = this.state.selectedPatientList.filter((value) => {
+      return value.id !== userId;
+    });
+    console.log(this.state.selec);
+    this.setState({
+      selectedPatientList: filtered,
+    });
+    filtered = this.state.patientList.filter((value) => {
       return value.id !== userId;
     });
     this.setState({
-      selectedPatients: filtered,
-    });
-    filtered = this.state.patients.filter((value) => {
-      return value.id !== userId;
-    });
-    this.setState({
-      patients: filtered,
+      patientList: filtered,
     });
     if (JSON.parse(localStorage.getItem("user")).type === "doctor") {
       this.props.dispatch(
@@ -70,6 +77,7 @@ class Patients extends Component {
         removeUser(userId, JSON.parse(localStorage.getItem("user")).token)
       );
     }
+    location.reload();
   }
 
   handlePageChange = (pageNumber) => {
@@ -118,68 +126,57 @@ class Patients extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Patient name
-              </TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Patient name</TableCell>
               {(JSON.parse(localStorage.getItem("user")).type === "nurse" ||
                 JSON.parse(localStorage.getItem("user")).type ===
                   "super admin" ||
                 JSON.parse(localStorage.getItem("user")).type === "admin") && (
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell style={{ fontWeight: "bold" }}>
                   Doctor name
                 </TableCell>
               )}
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Email
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Birthdate
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Home Address
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Weight(KG)
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Height(M)
-              </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
-                Gender
-              </TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Email</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Birthdate</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Home Address</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Weight(KG)</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Height(M)</TableCell>
+              <TableCell style={{ fontWeight: "bold" }}>Gender</TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
-                <TableCell align="right" />
+                <TableCell />
               )}
-              <TableCell align="right" />
-              <TableCell align="right" />
+              <TableCell />
+              <TableCell />
               {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
-                <TableCell align="right" />
+                <TableCell />
+              )}
+              {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+                <TableCell />
               )}
             </TableRow>
           </TableHead>
           <TableBody>
             {this.state.selectedPatientList.map((row) => (
-              <TableRow key={row.id.toString()+row.id_doctor.toString()}>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
+              <TableRow
+                key={
+                  row.id_doctor
+                    ? row.id.toString() + row.id_doctor.toString()
+                    : row.id.toString()
+                }
+              >
+                <TableCell>{row.name}</TableCell>
                 {(JSON.parse(localStorage.getItem("user")).type === "nurse" ||
                   JSON.parse(localStorage.getItem("user")).type ===
                     "super admin" ||
                   JSON.parse(localStorage.getItem("user")).type ===
-                    "admin") && (
-                  <TableCell align="right">{row.doctor}</TableCell>
-                )}
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.birthdate}</TableCell>
-                <TableCell align="right">{row.home_address}</TableCell>
-                <TableCell align="right">{row.weight}</TableCell>
-                <TableCell align="right">{row.height}</TableCell>
-                <TableCell align="right">{row.gender}</TableCell>
+                    "admin") && <TableCell>{row.doctor}</TableCell>}
+                <TableCell>{row.email}</TableCell>
+                <TableCell>{row.birthdate}</TableCell>
+                <TableCell>{row.home_address}</TableCell>
+                <TableCell>{row.weight}</TableCell>
+                <TableCell>{row.height}</TableCell>
+                <TableCell>{row.gender}</TableCell>
                 {JSON.parse(localStorage.getItem("user")).type !== "doctor" && (
-                  <TableCell align="right">
+                  <TableCell>
                     <IconButton
                       onClick={() => {
                         this.setState({
@@ -194,7 +191,7 @@ class Patients extends Component {
                 )}
 
                 {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
-                  <TableCell align="right">
+                  <TableCell>
                     <Button
                       onClick={() => {
                         this.setState({
@@ -209,7 +206,23 @@ class Patients extends Component {
                     </Button>
                   </TableCell>
                 )}
-                <TableCell align="right">
+                {JSON.parse(localStorage.getItem("user")).type === "doctor" && (
+                  <TableCell>
+                    <Button
+                      onClick={() => {
+                        
+                        this.setState({
+                          patient: row,
+                          patientAppointmentsOpen: true,
+                        });
+                      }}
+                      color={"primary"}
+                    >
+                      Appointments
+                    </Button>
+                  </TableCell>
+                )}
+                <TableCell>
                   <Button
                     onClick={() => {
                       this.setState({
@@ -223,8 +236,15 @@ class Patients extends Component {
                     Checkup
                   </Button>
                 </TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => this.deleteUser(row.id)}>
+                <TableCell>
+                  <IconButton
+                    onClick={() => {
+                      this.setState({
+                        rowId: row.id,
+                        deleteConfirmationOpen: true,
+                      });
+                    }}
+                  >
                     <DeleteIcon style={{ color: "red" }} />
                   </IconButton>
                 </TableCell>
@@ -238,6 +258,13 @@ class Patients extends Component {
           from={JSON.parse(localStorage.getItem("user")).type}
           close={() => {
             this.setState({ addPatientOpen: false });
+          }}
+        />
+        <PatientAppointments
+          open={this.state.patientAppointmentsOpen}
+          patient={this.state.patient}
+          close={() => {
+            this.setState({ patientAppointmentsOpen: false });
           }}
         />
         <EditPatient
@@ -269,7 +296,6 @@ class Patients extends Component {
             this.setState({ checkupOpen: false });
           }}
         />
-
         <Pagination
           page={this.state.pageNumber}
           count={
@@ -280,6 +306,15 @@ class Patients extends Component {
           color="primary"
           style={{ position: "absolute", bottom: 10, left: 5 }}
           onChange={(e, p) => this.handlePageChange(p)}
+        />
+        <DeleteConfirmation
+          open={this.state.deleteConfirmationOpen}
+          close={() => {
+            this.setState({ deleteConfirmationOpen: false });
+          }}
+          function={() => {
+            this.deleteUser(this.state.rowId);
+          }}
         />
       </div>
     );

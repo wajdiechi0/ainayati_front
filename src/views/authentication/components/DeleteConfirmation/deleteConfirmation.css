@@ -1,5 +1,6 @@
-.addDoctorContainer {
+.sContainer {
     width: 500px;
+    max-height: 500px;
     padding-bottom: 20px;
 }
 
@@ -7,18 +8,15 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
-    padding: 0 0.5em;
 }
 
 .fName {
     font-weight: bold;
 }
 
-.textfieldCont{
+.simpleSet{
     display: flex;
     flex-direction: row;
-    align-items: center;
     width: 100%;
     padding-left: 10px;
 }
@@ -29,10 +27,10 @@
     align-items: center;
 }
 
-.formText{
+.setForm{
     text-align: right ;
     margin-left: auto;
-    font-size: 0.8rem;
-    font-weight: bolder;
+    font-size: 1rem;
+    font-weight: bold;
     margin-top: 10px;
 }

@@ -14,6 +14,7 @@ import { connect } from "react-redux";
 import { fetchAdminList, removeUser } from "./../../../redux/actions";
 import AddAdmin from "./../Components/AddUser";
 import EditAdmin from "./../Components/EditUser";
+import DeleteConfirmation from "./../../authentication/components/DeleteConfirmation";
 class Admins extends Component {
   constructor(props) {
     super(props);
@@ -23,6 +24,8 @@ class Admins extends Component {
       editAdmin: {},
       addAdminOpen: false,
       editAdminOpen: false,
+      deleteConfirmationOpen: false,
+      rowId: 0,
     };
   }
 
@@ -62,26 +65,23 @@ class Admins extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Name
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 email
               </TableCell>
-              <TableCell align="right" />
-              <TableCell align="right" />
+              <TableCell  />
+              <TableCell  />
             </TableRow>
           </TableHead>
           <TableBody>
             {this.state.admins.map((row) => (
               <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">
+
+                <TableCell >{row.name}</TableCell>
+                <TableCell >{row.email}</TableCell>
+                <TableCell >
                   <IconButton
                     onClick={() => {
                       this.setState({
@@ -94,8 +94,15 @@ class Admins extends Component {
                     <CreateIcon style={{ color: "#0033cc" }} />
                   </IconButton>
                 </TableCell>
-                <TableCell align="right">
-                  <IconButton onClick={() => this.deleteUser(row.id)}>
+                <TableCell >
+                  <IconButton
+                    onClick={() => {
+                      this.setState({
+                        rowId: row.id,
+                        deleteConfirmationOpen: true,
+                      });
+                    }}
+                  >
                     <DeleteIcon style={{ color: "red" }} />
                   </IconButton>
                 </TableCell>
@@ -117,6 +124,13 @@ class Admins extends Component {
           }}
           editUser={this.state.editAdmin}
           type="admin"
+        />
+        <DeleteConfirmation
+          open={this.state.deleteConfirmationOpen}
+          close={() => {
+            this.setState({ deleteConfirmationOpen: false });
+          }}
+          function={()=>{this.deleteUser(this.state.rowId)}}
         />
       </div>
     );

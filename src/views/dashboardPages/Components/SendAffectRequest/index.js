@@ -105,37 +105,34 @@ function AffectRequestComponent(props) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Id</TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Name
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Email
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Work Address
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Specialty
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Gender
                 </TableCell>
-                <TableCell align="right" />
+                <TableCell  />
               </TableRow>
             </TableHead>
             <TableBody>
               {list.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell align="right">{row.name}</TableCell>
-                  <TableCell align="right">{row.email}</TableCell>
-                  <TableCell align="right">{row.work_address}</TableCell>
-                  <TableCell align="right">{row.specialty}</TableCell>
-                  <TableCell align="right">{row.gender}</TableCell>
-                  <TableCell align="right">
+
+                  <TableCell >{row.name}</TableCell>
+                  <TableCell >{row.email}</TableCell>
+                  <TableCell >{row.work_address}</TableCell>
+                  <TableCell >{row.specialty}</TableCell>
+                  <TableCell >{row.gender}</TableCell>
+                  <TableCell >
                     <Button
                       onClick={() => {
                         props.type === "nurse"

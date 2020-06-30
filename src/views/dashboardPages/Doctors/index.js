@@ -10,6 +10,7 @@ import CreateIcon from "@material-ui/icons/Create";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Typography from "@material-ui/core/Typography";
 import ResultAlert from "../../authentication/components/alert";
+import DeleteConfirmation from "./../../authentication/components/DeleteConfirmation";
 
 import { connect } from "react-redux";
 import {
@@ -111,73 +112,70 @@ class Doctors extends Component {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Name
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Email
               </TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                 JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                  <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  <TableCell  style={{ fontWeight: "bold" }}>
                     Birthdate
                   </TableCell>
                 )}
               {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                 JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                  <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  <TableCell  style={{ fontWeight: "bold" }}>
                     Home Address
                   </TableCell>
                 )}
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Work Address
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Specialty
               </TableCell>
               {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                 JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                  <TableCell align="right" style={{ fontWeight: "bold" }}>
+                  <TableCell  style={{ fontWeight: "bold" }}>
                     Gender
                   </TableCell>
                 )}
 
               {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                 JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                  <TableCell align="right" />
+                  <TableCell  />
                 )}
               {JSON.parse(localStorage.getItem("user")).type === "patient" && (
-                <TableCell align="right" />
+                <TableCell  />
               )}
-              <TableCell align="right" />
+              <TableCell  />
             </TableRow>
           </TableHead>
           <TableBody>
             {this.state.doctors.map((row) => (
               <TableRow key={row.id}>
-                <TableCell component="th" scope="row">
-                  {row.id}
-                </TableCell>
-                <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">{row.email}</TableCell>
+
+                <TableCell >{row.name}</TableCell>
+                <TableCell >{row.email}</TableCell>
                 {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                   JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                    <TableCell align="right">{row.birthdate}</TableCell>
+                    <TableCell >{row.birthdate}</TableCell>
                   )}
                 {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                   JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                    <TableCell align="right">{row.home_address}</TableCell>
+                    <TableCell >{row.home_address}</TableCell>
                   )}
-                <TableCell align="right">{row.work_address}</TableCell>
-                <TableCell align="right">{row.specialty}</TableCell>
+                <TableCell >{row.work_address}</TableCell>
+                <TableCell >{row.specialty}</TableCell>
                 {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                   JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                    <TableCell align="right">{row.gender}</TableCell>
+                    <TableCell >{row.gender}</TableCell>
                   )}
                 {JSON.parse(localStorage.getItem("user")).type !== "patient" &&
                   JSON.parse(localStorage.getItem("user")).type !== "nurse" && (
-                    <TableCell align="right">
+                    <TableCell >
                       <IconButton
                         onClick={() => {
                           this.setState({
@@ -190,14 +188,21 @@ class Doctors extends Component {
                       </IconButton>
                     </TableCell>
                   )}
-                <TableCell align="right">
-                  <IconButton onClick={() => this.deleteUser(row.id)}>
+                <TableCell >
+                  <IconButton
+                    onClick={() => {
+                      this.setState({
+                        rowId: row.id,
+                        deleteConfirmationOpen: true,
+                      });
+                    }}
+                  >
                     <DeleteIcon style={{ color: "red" }} />
                   </IconButton>
                 </TableCell>
                 {JSON.parse(localStorage.getItem("user")).type ===
                   "patient" && (
-                  <TableCell align="right">
+                  <TableCell >
                     <Button
                       onClick={() => {
                         this.setState({
@@ -255,6 +260,15 @@ class Doctors extends Component {
           text={this.state.alertText}
           success={this.state.success}
         />
+        <DeleteConfirmation
+          open={this.state.deleteConfirmationOpen}
+          close={() => {
+            this.setState({ deleteConfirmationOpen: false });
+          }}
+          function={() => {
+            this.deleteUser(this.state.rowId);
+          }}
+        />
       </div>
     );
   }
@@ -266,10 +280,9 @@ class Doctors extends Component {
     ) {
       let result = this.props.crudUser.sendAppointmentRequest;
       if (result) {
-
         this.setState({
-          disabled: false
-        })
+          disabled: false,
+        });
         if (result.code === "0") {
           this.setState({
             open: true,

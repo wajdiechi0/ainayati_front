@@ -50,20 +50,19 @@ function ActivityComponent(props) {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell style={{ fontWeight: "bold" }}>Id</TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Activity Type
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Distance(Km)
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Speed(Km/h)
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Duration(Minute)
                 </TableCell>
-                <TableCell align="right" style={{ fontWeight: "bold" }}>
+                <TableCell  style={{ fontWeight: "bold" }}>
                   Date
                 </TableCell>
               </TableRow>
@@ -71,14 +70,11 @@ function ActivityComponent(props) {
             <TableBody>
               {selectedList.map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    {row.id}
-                  </TableCell>
-                  <TableCell align="right">{row.type}</TableCell>
-                  <TableCell align="right">{row.distance}</TableCell>
-                  <TableCell align="right">{row.speed}</TableCell>
-                  <TableCell align="right">{row.duration}</TableCell>
-                  <TableCell align="right">{row.date_time}</TableCell>
+                  <TableCell >{row.type}</TableCell>
+                  <TableCell >{row.distance}</TableCell>
+                  <TableCell >{row.speed}</TableCell>
+                  <TableCell >{row.duration}</TableCell>
+                  <TableCell >{row.date_time}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

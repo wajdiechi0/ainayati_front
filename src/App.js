@@ -4,12 +4,7 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 import Dashboard from "./layouts/Dashboard";
 import Authentication from "./Authentication";
 import { createBrowserHistory } from "history";
-import {
-  Login,
-  Register,
-  Reset,
-  ResetLink,
-} from "./views/authentication/index";
+
 const hist = createBrowserHistory();
 function App() {
   return (

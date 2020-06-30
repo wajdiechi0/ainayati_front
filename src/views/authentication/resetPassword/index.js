@@ -9,7 +9,8 @@ class ResetPasswordComponent extends Component {
   state = {
     email: "",
     openAlert: false,
-    success: false
+    success: false,
+    disabled: false,
   };
 
   handleClose = () => {
@@ -19,6 +20,9 @@ class ResetPasswordComponent extends Component {
   };
 
   reset = () => {
+    this.setState({
+      disabled: true,
+    });
     this.props.dispatch(sendResetLink(this.state.email));
   };
   render() {
@@ -53,6 +57,7 @@ class ResetPasswordComponent extends Component {
               margin: 10
             }}
             onClick={this.reset}
+            disabled={this.state.disabled}
           >
             Send Reset Link
           </Button>
@@ -73,7 +78,8 @@ class ResetPasswordComponent extends Component {
           <div className={"backLogin"}>
             <Button
               href={"/login"}
-              style={{ fontWeight: "bold", color: "#282828" }}
+              style={{ fontWeight: "bold", color: "#282828" 
+            }}
             >
               Back To Login
             </Button>
@@ -91,8 +97,14 @@ class ResetPasswordComponent extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.auth.resetSendResult && this.props !== prevProps) {
+      this.setState({
+        disabled: false,
+      });
       this.setState({ openAlert: true, success: true, alertText: "Check your email!" });
     } else if (!this.props.auth.resetSendResult && this.props !== prevProps) {
+      this.setState({
+        disabled: false,
+      });
       this.setState({ openAlert: true,success: false, alertText: "Please check your entries" });
     }
   }

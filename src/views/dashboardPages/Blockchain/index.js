@@ -55,10 +55,10 @@ class BlockchainComponent extends Component {
               <TableCell style={{ fontWeight: "bold" }}>
                 Transaction ID
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Transaction type
               </TableCell>
-              <TableCell align="right" style={{ fontWeight: "bold" }}>
+              <TableCell  style={{ fontWeight: "bold" }}>
                 Transaction date
               </TableCell>
             </TableRow>
@@ -69,8 +69,8 @@ class BlockchainComponent extends Component {
                 <TableCell component="th" scope="row">
                   {row.transactionId}
                 </TableCell>
-                <TableCell align="right">{row.transactionType}</TableCell>
-                <TableCell align="right">{row.transactionTimestamp}</TableCell>
+                <TableCell >{row.transactionType}</TableCell>
+                <TableCell >{row.transactionTimestamp}</TableCell>
               </TableRow>
             ))}
           </TableBody>

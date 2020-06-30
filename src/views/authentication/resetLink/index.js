@@ -14,22 +14,26 @@ class ResetLinkComponent extends Component {
     c_password: "",
     openAlert: false,
     success: false,
-    alertText: ""
+    alertText: "",
+    disabled:false,
   };
 
   handleClose = () => {
     this.setState({
-      openAlert: false
+      openAlert: false,
     });
   };
 
   reset = () => {
+    this.setState({
+      disabled:true
+    })
     this.props.dispatch(
       resetPassword(
         this.state.email,
         this.state.password,
         this.state.c_password,
-        this.props.token
+        this.props.match.params.token
       )
     );
   };
@@ -37,7 +41,7 @@ class ResetLinkComponent extends Component {
     return (
       <div className={"rlContainer"}>
         <div className={"rlFormContainer"}>
-          <Lock style={{ width: 65, height: 65}} />
+          <Lock style={{ width: 65, height: 65 }} />
           <p style={{ color: "#9d9d9d", fontWeight: "light", margin: "10%" }}>
             Please confirm your new password
           </p>
@@ -47,9 +51,9 @@ class ResetLinkComponent extends Component {
             margin={"dense"}
             className={"input"}
             type={"email"}
-            onChange={e => {
+            onChange={(e) => {
               this.setState({
-                email: e.target.value
+                email: e.target.value,
               });
             }}
           />
@@ -59,9 +63,9 @@ class ResetLinkComponent extends Component {
             margin={"dense"}
             className={"input"}
             type={"password"}
-            onChange={e => {
+            onChange={(e) => {
               this.setState({
-                password: e.target.value
+                password: e.target.value,
               });
             }}
           />
@@ -71,9 +75,9 @@ class ResetLinkComponent extends Component {
             margin={"dense"}
             className={"input"}
             type={"password"}
-            onChange={e => {
+            onChange={(e) => {
               this.setState({
-                c_password: e.target.value
+                c_password: e.target.value,
               });
             }}
           />
@@ -84,18 +88,19 @@ class ResetLinkComponent extends Component {
               width: "80%",
               backgroundColor: "#3897f0",
               fontWeight: "bold",
-              margin: 10
+              margin: 10,
             }}
             onClick={this.reset}
+            disabled={this.state.disabled}
           >
             Reset Password
           </Button>
-            <Button
-              href={"/login"}
-              style={{ fontWeight: "bold", color: "#282828" }}
-            >
-              Back To Login
-            </Button>
+          <Button
+            href={"/login"}
+            style={{ fontWeight: "bold", color: "#282828" }}
+          >
+            Back To Login
+          </Button>
         </div>
         <Alert
           open={this.state.openAlert}
@@ -109,6 +114,9 @@ class ResetLinkComponent extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.auth.resetResult) {
+      this.setState({
+        disabled:false
+      })
       if (
         this.props.auth.resetResult.code === "02" &&
         this.props !== prevProps
@@ -116,7 +124,7 @@ class ResetLinkComponent extends Component {
         this.setState({
           openAlert: true,
           success: false,
-          alertText: "Please check your entries"
+          alertText: "Please check your entries",
         });
       } else if (
         this.props.auth.resetResult.code === "04" &&
@@ -125,7 +133,7 @@ class ResetLinkComponent extends Component {
         this.setState({
           openAlert: true,
           success: false,
-          alertText: this.props.auth.resetResult.data
+          alertText: this.props.auth.resetResult.data,
         });
       } else if (
         this.props.auth.resetResult.code === "0" &&
@@ -134,22 +142,19 @@ class ResetLinkComponent extends Component {
         this.setState({
           openAlert: true,
           success: true,
-          alertText: "Your password has been successfully changed"
+          alertText: "Your password has been successfully changed",
         });
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
       }
     }
   }
 
   componentDidMount() {
-    document.title = 'Reset password';
+    document.title = "Reset password";
   }
 }
 function mapStateToProps(state) {
   return {
-    auth: state.authReducer
+    auth: state.authReducer,
   };
 }
 export default connect(mapStateToProps)(ResetLinkComponent);
